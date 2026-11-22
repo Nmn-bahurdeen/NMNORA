@@ -26,7 +26,15 @@ export default function LoginPage() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to sign in. Please check your credentials.');
+      console.error('Login submit error:', err);
+      const serverMsg = err.response?.data?.error;
+      if (serverMsg) {
+        setError(serverMsg);
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        setError('Cannot connect to server. Please verify backend is running on port 5000.');
+      } else {
+        setError('Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }

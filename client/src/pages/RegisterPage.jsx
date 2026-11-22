@@ -30,7 +30,15 @@ export default function RegisterPage() {
       await register(formData);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      console.error('Registration submit error:', err);
+      const serverMsg = err.response?.data?.error;
+      if (serverMsg) {
+        setError(serverMsg);
+      } else if (err.code === 'ERR_NETWORK' || !err.response) {
+        setError('Cannot connect to server (backend is offline or restarting). Please retry in a few seconds.');
+      } else {
+        setError('Registration failed. Please check your information and try again.');
+      }
     } finally {
       setLoading(false);
     }
