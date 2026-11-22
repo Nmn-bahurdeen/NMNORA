@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 650" width="100%" height="100%">
+  <defs>
+    <!-- Dark Studio Ambient Background -->
+    <radialGradient id="studioAmbient" cx="60%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0c1322"/>
+      <stop offset="45%" stop-color="#060911"/>
+      <stop offset="100%" stop-color="#020307"/>
+    </radialGradient>
+
+    <!-- Metallic Black Headphones Gradient -->
+    <linearGradient id="metalEarcup" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="25%" stop-color="#1e293b"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <!-- Concentric Brushed Metal Ring Texture -->
+    <radialGradient id="brushedCap" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="25%" stop-color="#334155"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="75%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+
+    <!-- Electric Cyan Blue Light Streaks -->
+    <linearGradient id="laserBeam1" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#bae6fd" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="laserBeam2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#60a5fa" stop-opacity="0.7"/>
+      <stop offset="65%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Rim Lighting Glow Filter -->
+    <filter id="laserGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Pedestal Metallic Gradients -->
+    <linearGradient id="pedestalTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="pedestalSide" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+
+    <filter id="headphoneShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="30" stdDeviation="35" flood-color="#000000" flood-opacity="0.95"/>
+      <feDropShadow dx="-10" dy="10" stdDeviation="20" flood-color="#0284c7" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="650" fill="url(#studioAmbient)"/>
+
+  <!-- Background Laser Beams (Diagonal Cyber Blue Streaks) -->
+  <g filter="url(#laserGlow)">
+    <line x1="280" y1="650" x2="820" y2="280" stroke="url(#laserBeam1)" stroke-width="4.5"/>
+    <line x1="360" y1="650" x2="850" y2="340" stroke="url(#laserBeam2)" stroke-width="3"/>
+    <line x1="420" y1="650" x2="850" y2="400" stroke="url(#laserBeam1)" stroke-width="1.8" opacity="0.6"/>
+  </g>
+
+  <!-- Ambient Blue Horizon Glow -->
+  <ellipse cx="500" cy="460" rx="280" ry="80" fill="#0284c7" opacity="0.15" filter="blur(40px)"/>
+
+  <!-- Pedestal Platform Below Product -->
+  <g transform="translate(180, 460)">
+    <!-- 3D Pedestal Top Surface -->
+    <polygon points="0,60 140,0 480,0 340,60" fill="url(#pedestalTop)" stroke="#334155" stroke-width="1.5"/>
+    <!-- 3D Pedestal Front Wall -->
+    <polygon points="0,60 340,60 340,160 0,160" fill="url(#pedestalSide)"/>
+    <!-- 3D Pedestal Right Wall -->
+    <polygon points="340,60 480,0 480,100 340,160" fill="#090d16"/>
+
+    <!-- Subtle Pedestal Rim Reflection Edge -->
+    <line x1="0" y1="60" x2="340" y2="60" stroke="#60a5fa" stroke-width="2" opacity="0.8"/>
+  </g>
+
+  <!-- Flagship Over-Ear Studio Headphones Floating in 3D -->
+  <g filter="url(#headphoneShadow)" transform="translate(390, 270)">
+    <!-- Headband Arch (Outer Steel & Leather Cushion) -->
+    <path d="M -135,10 C -135,-190 135,-190 135,10" fill="none" stroke="#090d16" stroke-width="42" stroke-linecap="round"/>
+    <path d="M -135,10 C -135,-190 135,-190 135,10" fill="none" stroke="#1e293b" stroke-width="34" stroke-linecap="round"/>
+    <!-- Metallic Inner Accent Trim -->
+    <path d="M -115,-15 C -115,-170 115,-170 115,-15" fill="none" stroke="#64748b" stroke-width="2.5" opacity="0.8"/>
+    <!-- Top Leather Padding Highlights -->
+    <path d="M -60,-155 C -20,-162 20,-162 60,-155" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Left Earcup Assembly (Angled Perspective) -->
+    <g transform="translate(-130, 20) rotate(-8)">
+      <!-- Plush Cushion -->
+      <ellipse cx="-20" cy="30" rx="36" ry="68" fill="#090d16" stroke="#1e293b" stroke-width="2"/>
+      <!-- Metallic Pivot Fork -->
+      <path d="M 0,-30 L -10,30 L 10,30 Z" fill="#475569" stroke="#94a3b8" stroke-width="1.2"/>
+      <!-- Outer Metal Housing -->
+      <ellipse cx="-5" cy="30" rx="34" ry="62" fill="url(#metalEarcup)" stroke="#64748b" stroke-width="2"/>
+      <!-- Concentric Spun Metal Center Cap -->
+      <ellipse cx="5" cy="30" rx="20" ry="40" fill="url(#brushedCap)"/>
+      <ellipse cx="8" cy="30" rx="14" ry="28" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" opacity="0.7"/>
+    </g>
+
+    <!-- Right Earcup Assembly (Facing Viewer with High-Gloss Circular Flare) -->
+    <g transform="translate(80, 50) rotate(10)">
+      <!-- Giant Ergonomic Leather Ear Cushion -->
+      <ellipse cx="-35" cy="10" rx="46" ry="84" fill="#090d16" stroke="#1e293b" stroke-width="2"/>
+
+      <!-- Aluminum Housing Shell with Precision Bevel -->
+      <ellipse cx="-15" cy="10" rx="55" ry="80" fill="url(#metalEarcup)" stroke="#94a3b8" stroke-width="2"/>
+
+      <!-- Polished Chrome Chamfer Edge Ring -->
+      <ellipse cx="5" cy="10" rx="48" ry="70" fill="none" stroke="#e2e8f0" stroke-width="3" opacity="0.9"/>
+      <ellipse cx="8" cy="10" rx="44" ry="64" fill="none" stroke="#38bdf8" stroke-width="1.5" opacity="0.8"/>
+
+      <!-- Spun Brushed Aluminum Faceplate -->
+      <ellipse cx="12" cy="10" rx="42" ry="62" fill="url(#brushedCap)"/>
+
+      <!-- Dynamic Light Glare Arc on Brushed Metal Faceplate -->
+      <path d="M 0,-35 C 30,-25 45,15 25,50" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.65"/>
+      <path d="M -10,-20 C 15,-10 25,20 10,40" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+
+      <!-- Center Acoustic Core -->
+      <circle cx="12" cy="10" r="14" fill="#020617" stroke="#475569" stroke-width="1.5"/>
+      <circle cx="12" cy="10" r="6" fill="#090d16"/>
+    </g>
+  </g>
+</svg>

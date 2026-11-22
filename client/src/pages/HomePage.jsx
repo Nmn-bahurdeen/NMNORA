@@ -1,25 +1,21 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Truck, RefreshCw, Award, ChevronRight, Smartphone, Sparkles, Zap, Headphones, CheckCircle2, Star } from 'lucide-react';
+import { Truck, RotateCcw, ShieldCheck, Headphones, ArrowRight, ChevronRight, Sparkles, Smartphone, Shield, Zap } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 import { getProducts } from '../services/api';
-import { formatPrice } from '../utils/formatPrice';
 
 const CATEGORIES = [
-  { name: 'iPhones (11 to 17 Pro Max)', key: 'iPhone', icon: Smartphone, desc: 'Flagship & Pro Series', gradient: 'from-blue-600 via-indigo-600 to-purple-700', badge: '100% Genuine' },
-  { name: 'Cases & Covers', key: 'Cases & Covers', icon: Shield, desc: 'MagSafe & Armor Covers', gradient: 'from-purple-600 via-pink-600 to-rose-600', badge: 'Military Drop' },
-  { name: 'Temper Glass', key: 'Temper Glass', icon: Sparkles, desc: '9H Sapphire & Privacy', gradient: 'from-cyan-500 via-blue-600 to-indigo-700', badge: 'Anti-Scratch' },
-  { name: 'Wireless Audio', key: 'Wireless Headphones', icon: Zap, desc: 'AirPods & TWS Earbuds', gradient: 'from-emerald-500 via-teal-600 to-cyan-700', badge: 'Spatial Audio' },
-  { name: 'Wired EarPods', key: 'Wired Headphones', icon: Headphones, desc: 'Lightning & USB-C Original', gradient: 'from-amber-500 via-orange-600 to-red-600', badge: 'Lossless DAC' },
+  { name: 'iPhones & Pro Series', key: 'iPhone', icon: Smartphone, count: '19 Models', desc: 'Titanium & Bionic Performance' },
+  { name: 'MagSafe Cases & Covers', key: 'Cases & Covers', icon: Shield, count: '5 Collections', desc: 'Shockproof Military Defense' },
+  { name: '9H Tempered Glass', key: 'Temper Glass', icon: Sparkles, count: '7 Varieties', desc: 'Sapphire & Privacy Crystal Clear' },
+  { name: 'Wireless Audio & TWS', key: 'Wireless Headphones', icon: Zap, count: '4 Models', desc: 'Spatial Sound & Active ANC' },
+  { name: 'Original Wired EarPods', key: 'Wired Headphones', icon: Headphones, count: '3 Types', desc: 'Lightning & USB-C High-Res DAC' },
 ];
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [heroRotate, setHeroRotate] = useState({ x: -12, y: 18 });
-  const heroRef = useRef(null);
 
   useEffect(() => {
     getProducts()
@@ -27,236 +23,176 @@ const HomePage = () => {
       .catch(() => setLoading(false));
   }, []);
 
-  const handleHeroMouseMove = (e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setHeroRotate({
-      x: -(y / (rect.height / 2)) * 18,
-      y: (x / (rect.width / 2)) * 24,
-    });
-  };
-
-  const handleHeroMouseLeave = () => {
-    setHeroRotate({ x: -8, y: 14 });
-  };
-
   const featured = products.filter(p => p.featured).slice(0, 8);
-  const proSeries = products.filter(p => p.name?.toLowerCase().includes('pro')).slice(0, 4);
   const bestsellers = products.filter(p => p.bestseller).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
-      {/* ── 3D Interactive Hero Section ── */}
-      <section
-        ref={heroRef}
-        onMouseMove={handleHeroMouseMove}
-        onMouseLeave={handleHeroMouseLeave}
-        className="relative min-h-[92vh] bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white flex items-center overflow-hidden py-16"
-        style={{ perspective: '1600px' }}
-      >
-        {/* Animated Background 3D Glow Orbs */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/30 rounded-full blur-[130px] animate-pulse" />
-          <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-600/25 rounded-full blur-[160px]" />
-          <div className="absolute top-10 right-1/3 w-80 h-80 bg-cyan-500/20 rounded-full blur-[110px]" />
-          {/* Subtle 3D grid line floor */}
-          <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-slate-950 to-transparent opacity-80" />
+    <div className="min-h-screen bg-white">
+      {/* ── LUXURY STUDIO HERO SECTION (Reference: Next Level Tech) ── */}
+      <section className="relative bg-[#06080e] text-white overflow-hidden min-h-[580px] lg:min-h-[640px] flex items-center">
+        {/* Subtle studio glow & laser beams */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 -left-20 w-96 h-96 bg-blue-600/15 rounded-full blur-[140px]" />
+          <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-sky-500/15 rounded-full blur-[150px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 grid lg:grid-cols-12 gap-12 items-center">
-          {/* Left Text Column */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            {/* Live Store Pill */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-indigo-300 text-xs font-semibold shadow-inner">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-              <span>CHENNAI'S PREMIER APPLE DESTINATION</span>
-              <span className="text-white/40">•</span>
-              <span className="text-white">Shop Open Now</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.08]">
-              iPhone 11 to 17 <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 drop-shadow-[0_2px_25px_rgba(245,158,11,0.3)]">
-                PRO & PRO MAX
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
-              Experience the pinnacle of Apple technology. 100% brand new, authentic Apple devices, genuine 9H tempered glass, MagSafe cases, and pure studio audio in Chennai.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-2">
-              <Link
-                to="/shop?category=iPhone"
-                className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base shadow-xl shadow-indigo-600/40 hover:shadow-indigo-500/60 transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
-              >
-                <span>Explore All iPhones</span>
-                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/shop"
-                className="px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-base backdrop-blur-md border border-white/15 transition-all duration-300 hover:-translate-y-1"
-              >
-                View Accessories
-              </Link>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-300">
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <Shield size={16} className="text-emerald-400" />
-                <span>1 Year Warranty</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 lg:py-20 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-10 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-6 space-y-6 text-left">
+              {/* Reference Kicker */}
+              <div className="text-blue-400 font-bold tracking-[0.25em] text-xs sm:text-sm uppercase flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                NEXT LEVEL TECH. ELEVATED.
               </div>
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <Truck size={16} className="text-cyan-400" />
-                <span>Fast Chennai Delivery</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <Award size={16} className="text-amber-400" />
-                <span>100% Genuine</span>
-              </div>
-              <div className="flex items-center gap-2 justify-center lg:justify-start">
-                <RefreshCw size={16} className="text-purple-400" />
-                <span>Easy Returns</span>
+
+              {/* Reference Headline */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-black tracking-tight leading-[1.08] text-white uppercase font-sans">
+                ENGINEERED <br />
+                FOR PERFORMANCE. <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300">
+                  BUILT FOR YOU.
+                </span>
+              </h1>
+
+              {/* Reference Subtext */}
+              <p className="text-gray-400 text-sm sm:text-base leading-relaxed max-w-lg font-normal">
+                Premium gadgets. Cutting-edge technology. <br className="hidden sm:inline" />
+                Designed to enhance the way you live, work, and play.
+              </p>
+
+              {/* Reference Two Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-3">
+                <Link
+                  to="/shop"
+                  className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs sm:text-sm tracking-wider uppercase px-7 py-3.5 rounded-lg transition-all duration-200 flex items-center gap-2 shadow-lg shadow-blue-600/30 hover:shadow-blue-500/50 hover:-translate-y-0.5"
+                >
+                  <span>SHOP NOW</span>
+                  <ArrowRight size={16} />
+                </Link>
+
+                <Link
+                  to="/shop"
+                  className="border border-white/20 hover:border-white/50 text-white font-semibold text-xs sm:text-sm tracking-wider uppercase px-7 py-3.5 rounded-lg transition-all duration-200 hover:bg-white/5 hover:-translate-y-0.5"
+                >
+                  EXPLORE COLLECTIONS
+                </Link>
               </div>
             </div>
-          </div>
 
-          {/* Right 3D Interactive Device Showcase */}
-          <div className="lg:col-span-5 flex justify-center items-center">
-            <div
-              className="relative w-72 sm:w-80 h-[480px] sm:h-[520px] transition-transform duration-200 ease-out transform-gpu cursor-grab"
-              style={{
-                transform: `rotateX(${heroRotate.x}deg) rotateY(${heroRotate.y}deg)`,
-                transformStyle: 'preserve-3d',
-              }}
-            >
-              {/* Backglow Ambient */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/30 to-indigo-600/30 rounded-[50px] blur-2xl -z-10 scale-95" />
-
-              {/* 3D Phone Body */}
-              <div
-                className="w-full h-full rounded-[50px] bg-gradient-to-b from-stone-800 via-stone-900 to-black p-3.5 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.25)] border-[3px] border-amber-300/40 relative overflow-hidden"
-                style={{ transform: 'translateZ(30px)' }}
-              >
-                {/* Screen Reflection Sheen */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/15 via-white/5 to-transparent pointer-events-none z-20 rounded-[44px]" />
-
-                {/* Display Area */}
-                <div className="w-full h-full rounded-[42px] bg-slate-950 overflow-hidden relative flex flex-col justify-between p-6 border border-stone-700/50">
-                  {/* Dynamic Island */}
-                  <div className="flex justify-center z-30">
-                    <div className="w-28 h-6 bg-black rounded-full border border-stone-800 flex items-center justify-between px-3">
-                      <div className="w-2.5 h-2.5 rounded-full bg-blue-950 border border-blue-800" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    </div>
-                  </div>
-
-                  {/* Inside Display Content */}
-                  <div className="space-y-4 my-auto text-center z-10">
-                    <div className="w-24 h-24 mx-auto rounded-3xl overflow-hidden shadow-2xl border border-amber-400/30">
-                      <img src="/products/iphone-promax.svg" alt="iPhone 17 Pro Max" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <span className="text-[11px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">
-                        TITANIUM FLAGSHIP
-                      </span>
-                      <h3 className="text-xl font-black text-white mt-2">iPhone 17 Pro Max</h3>
-                      <p className="text-amber-300 font-extrabold text-2xl mt-1">₹1,54,900</p>
-                    </div>
-                    <div className="text-xs text-slate-400 space-y-1">
-                      <p>Triple 48MP Periscope Telephoto</p>
-                      <p>A19 Pro Chip with Apple Intelligence</p>
-                    </div>
-                  </div>
-
-                  {/* Bottom Home Indicator */}
-                  <div className="w-32 h-1 bg-white/40 rounded-full mx-auto" />
-                </div>
-              </div>
-
-              {/* Floating 3D Floating Badge 1 */}
-              <div
-                className="absolute -top-4 -left-6 bg-slate-900/95 backdrop-blur-xl border border-amber-400/40 text-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 z-30 animate-float"
-                style={{ transform: 'translateZ(70px)' }}
-              >
-                <div className="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-black">
-                  <Star size={18} className="fill-amber-400 text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-amber-300 font-semibold uppercase">Customer Rating</p>
-                  <p className="text-sm font-black text-white">4.9 / 5.0 (2,400+)</p>
-                </div>
-              </div>
-
-              {/* Floating 3D Floating Badge 2 */}
-              <div
-                className="absolute -bottom-6 -right-6 bg-slate-900/95 backdrop-blur-xl border border-indigo-400/40 text-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 z-30 animate-float"
-                style={{ transform: 'translateZ(80px)', animationDelay: '1.2s' }}
-              >
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black">
-                  <CheckCircle2 size={18} className="text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-indigo-300 font-semibold uppercase">Authenticity</p>
-                  <p className="text-sm font-black text-white">100% Genuine Apple</p>
-                </div>
+            {/* Right Studio Product Visual on Pedestal */}
+            <div className="lg:col-span-6 flex justify-center items-center relative">
+              <div className="relative w-full max-w-[580px] aspect-[4/3] rounded-3xl overflow-hidden flex items-center justify-center">
+                <img
+                  src="/images/hero-studio-headphone.svg"
+                  alt="Flagship Performance Gear on Studio Pedestal"
+                  className="w-full h-full object-contain filter drop-shadow-[0_20px_40px_rgba(2,132,199,0.25)] hover:scale-102 transition-transform duration-700"
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 3D Categories Grid ── */}
-      <section className="py-20 bg-slate-50 relative">
+      {/* ── 4-FEATURE TRUST STRIP (Exactly Matching Reference Bottom Strip) ── */}
+      <section className="bg-[#0b0e14] border-t border-b border-gray-800 text-gray-300 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">
-              EXPLORE OUR COLLECTION
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3 tracking-tight">
-              Curated Apple Mobile Store
-            </h2>
-            <p className="text-gray-500 mt-2 text-sm sm:text-base">
-              Only authentic iPhone models, shatter-resistant temper glass, MagSafe cases, and audiophile earphones.
-            </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {/* Feature 1: Free Delivery */}
+            <div className="flex items-center gap-3.5">
+              <div className="text-gray-300 shrink-0">
+                <Truck size={24} strokeWidth={1.75} />
+              </div>
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-wider text-white">FREE EXPRESS DELIVERY</p>
+                <p className="text-[11px] text-gray-400">On orders over ₹5,000</p>
+              </div>
+            </div>
+
+            {/* Feature 2: Easy Returns */}
+            <div className="flex items-center gap-3.5">
+              <div className="text-gray-300 shrink-0">
+                <RotateCcw size={24} strokeWidth={1.75} />
+              </div>
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-wider text-white">30-DAY EASY RETURNS</p>
+                <p className="text-[11px] text-gray-400">Hassle-free returns</p>
+              </div>
+            </div>
+
+            {/* Feature 3: Warranty */}
+            <div className="flex items-center gap-3.5">
+              <div className="text-gray-300 shrink-0">
+                <ShieldCheck size={24} strokeWidth={1.75} />
+              </div>
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-wider text-white">2-YEAR WARRANTY</p>
+                <p className="text-[11px] text-gray-400">Premium coverage</p>
+              </div>
+            </div>
+
+            {/* Feature 4: Expert Support */}
+            <div className="flex items-center gap-3.5">
+              <div className="text-gray-300 shrink-0">
+                <Headphones size={24} strokeWidth={1.75} />
+              </div>
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-wider text-white">24/7 EXPERT SUPPORT</p>
+                <p className="text-[11px] text-gray-400">We're here to help</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── TRENDING CATEGORIES ── */}
+      <section className="py-16 sm:py-20 bg-gray-50/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="text-[11px] font-bold text-blue-600 tracking-widest uppercase">
+                PREMIUM SELECTION
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-950 mt-1 uppercase tracking-tight">
+                SHOP BY CATEGORY
+              </h2>
+            </div>
+            <Link to="/shop" className="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider flex items-center gap-1">
+              <span>View All Categories</span>
+              <ChevronRight size={14} />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {CATEGORIES.map((cat, idx) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+            {CATEGORIES.map(cat => {
               const Icon = cat.icon;
               return (
                 <Link
                   key={cat.key}
                   to={`/shop?category=${encodeURIComponent(cat.key)}`}
-                  className="group relative bg-white rounded-3xl p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
-                  style={{ animationDelay: `${idx * 0.1}s` }}
+                  className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 group flex flex-col justify-between"
                 >
-                  {/* Top Category Badge */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon size={26} />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gray-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
+                      <Icon size={22} />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                      {cat.badge}
+                    <span className="text-[10px] font-semibold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">
+                      {cat.count}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="font-extrabold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
+                    <h3 className="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">
                       {cat.name}
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-1">
                       {cat.desc}
                     </p>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-indigo-600">
-                    <span>Browse Products</span>
-                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] font-bold text-blue-600">
+                    <span>Explore</span>
+                    <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
               );
@@ -265,72 +201,32 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── Featured Pro Showcase Section ── */}
-      {proSeries.length > 0 && (
-        <section className="py-20 bg-slate-950 text-white relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
-              <div>
-                <span className="text-xs font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">
-                  FLAGSHIP PERFORMANCE
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-black text-white mt-2">
-                  iPhone Pro & Pro Max Lineup
-                </h2>
-                <p className="text-slate-400 text-sm mt-1">
-                  Engineered with titanium, triple Pro camera system, and ultra-high dynamic range displays.
-                </p>
-              </div>
-              <Link
-                to="/shop?category=iPhone"
-                className="text-amber-400 hover:text-amber-300 font-bold text-sm flex items-center gap-1.5"
-              >
-                <span>View all Pro Models</span>
-                <ChevronRight size={16} />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {proSeries.map((product, i) => (
-                <ProductCard key={product.id} product={product} index={i} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── All Featured Products Grid ── */}
-      <section className="py-20 bg-white">
+      {/* ── FEATURED PRODUCTS GRID ── */}
+      <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
             <div>
-              <span className="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                TOP PICKS TODAY
+              <span className="text-[11px] font-bold text-blue-600 tracking-widest uppercase">
+                NEW ARRIVALS & TRENDING
               </span>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-2">
-                Featured Products & Accessories
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-950 mt-1 uppercase tracking-tight">
+                FEATURED PRODUCTS
               </h2>
-              <p className="text-gray-500 text-sm mt-1">
-                Everything in stock and ready for immediate dispatch across Chennai and India.
-              </p>
             </div>
-            <Link
-              to="/shop"
-              className="text-indigo-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1.5"
-            >
-              <span>Explore All ({products.length})</span>
-              <ChevronRight size={16} />
+            <Link to="/shop" className="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider flex items-center gap-1">
+              <span>View All ({products.length})</span>
+              <ChevronRight size={14} />
             </Link>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="rounded-3xl bg-gray-100 aspect-square animate-pulse" />
+                <div key={i} className="rounded-2xl bg-gray-100 aspect-square animate-pulse" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {featured.map((product, i) => (
                 <ProductCard key={product.id} product={product} index={i} />
               ))}
@@ -339,22 +235,26 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── Bestsellers Section ── */}
+      {/* ── BEST SELLERS ── */}
       {bestsellers.length > 0 && (
-        <section className="py-20 bg-gray-50">
+        <section className="py-16 bg-gray-50/70 border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center justify-between mb-8">
               <div>
-                <span className="text-xs font-black uppercase tracking-widest text-red-600 bg-red-50 px-3 py-1 rounded-full">
-                  MOST POPULAR
+                <span className="text-[11px] font-bold text-rose-600 tracking-widest uppercase">
+                  TOP CUSTOMER CHOICES
                 </span>
-                <h2 className="text-3xl font-black text-gray-900 mt-2">🔥 Customer Bestsellers</h2>
+                <h2 className="text-2xl sm:text-3xl font-black text-gray-950 mt-1 uppercase tracking-tight">
+                  BEST SELLERS
+                </h2>
               </div>
-              <Link to="/shop" className="text-indigo-600 font-bold text-sm flex items-center gap-1">
-                See all <ChevronRight size={15} />
+              <Link to="/shop" className="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wider flex items-center gap-1">
+                <span>See All</span>
+                <ChevronRight size={14} />
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {bestsellers.map((product, i) => (
                 <ProductCard key={product.id} product={product} index={i} />
               ))}
@@ -363,24 +263,32 @@ const HomePage = () => {
         </section>
       )}
 
-      {/* ── Promotional Express Banner ── */}
-      <section className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 text-white py-14 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
-          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
-            <Truck size={32} className="text-white" />
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-black mb-3">
-            Free Express Delivery in Chennai
+      {/* ── CHENNAI STORE ASSURANCE BANNER ── */}
+      <section className="bg-black text-white py-14 border-t border-gray-800">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <span className="text-blue-400 font-bold text-xs tracking-widest uppercase mb-2 inline-block">
+            AUTHENTIC QUALITY PROMISE
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-4">
+            CERTIFIED GENUINE GEAR. DELIVERED DIRECTLY TO YOU.
           </h2>
-          <p className="text-indigo-100 max-w-xl mx-auto mb-8 text-sm sm:text-base">
-            Orders placed before 2:00 PM are dispatched same-day with secure insurance and delivery tracking right to your doorstep.
+          <p className="text-gray-400 text-xs sm:text-sm max-w-2xl mx-auto mb-8 leading-relaxed">
+            NMNORA offers authentic products with full warranty support. Located at 123 Commerce Street, Chennai – 600 048. Contact our support team directly at +91 99438 81393.
           </p>
-          <Link
-            to="/shop"
-            className="inline-block bg-white text-indigo-700 font-bold px-8 py-4 rounded-2xl shadow-xl hover:bg-slate-100 transition-all duration-200 active:scale-95"
-          >
-            Start Shopping Now
-          </Link>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              to="/shop"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs tracking-wider uppercase px-7 py-3 rounded-lg transition-colors"
+            >
+              SHOP THE STORE
+            </Link>
+            <a
+              href="tel:9943881393"
+              className="border border-white/20 hover:border-white/50 text-white font-semibold text-xs tracking-wider uppercase px-7 py-3 rounded-lg transition-colors"
+            >
+              CALL +91 99438 81393
+            </a>
+          </div>
         </div>
       </section>
 

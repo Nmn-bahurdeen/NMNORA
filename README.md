@@ -30,10 +30,12 @@ npm run install-all
 npm run dev
 ```
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:5000 |
+| Service | URL | Notes |
+|---------|-----|-------|
+| Local Laptop | http://localhost:5173 | Windows / Mac / Linux |
+| Mobile (Wi-Fi) | http://172.19.230.153:5173 | Android / iPhone on local network |
+| Public URL (Global) | https://expiration-later-ultra-cubic.trycloudflare.com | Accessible anywhere in the world |
+| Backend API | http://localhost:5000 | NeDB embedded database |
 
 ---
 
