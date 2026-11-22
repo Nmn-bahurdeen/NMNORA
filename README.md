@@ -20,12 +20,12 @@
 
 ## 🚀 Quick Start
 
-### 1. Install all dependencies (one command)
+### 1. Install all dependencies
 ```bash
 npm run install-all
 ```
 
-### 2. Start both dev servers
+### 2. Start frontend + backend together (single command)
 ```bash
 npm run dev
 ```
