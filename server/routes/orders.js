@@ -1,77 +1,63 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-
 const router = express.Router();
-const dataPath = path.join(__dirname, '../data/orders.json');
+const { ordersDB } = require('../db/database');
 
-function readOrders() {
-  const raw = fs.readFileSync(dataPath, 'utf-8');
-  return JSON.parse(raw);
+function generateOrderId() {
+  return 'ORD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
 }
 
-function writeOrders(orders) {
-  fs.writeFileSync(dataPath, JSON.stringify(orders, null, 2), 'utf-8');
-}
-
-// GET /api/orders - return all orders
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const orders = readOrders();
+    const orders = await ordersDB.findAsync({});
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(orders);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to read orders' });
+    res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
 
-// GET /api/orders/:id - return single order
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const orders = readOrders();
-    const order = orders.find(o => o.id === req.params.id);
+    const order = await ordersDB.findOneAsync({ id: req.params.id });
     if (!order) return res.status(404).json({ error: 'Order not found' });
     res.json(order);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to read order' });
+    res.status(500).json({ error: 'Failed to fetch order' });
   }
 });
 
-// POST /api/orders - create order
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const orders = readOrders();
-    const newOrder = {
-      id: `order_${Date.now()}`,
-      status: 'pending',
+    const { customer, items, total, deliveryFee, subtotal } = req.body;
+    if (!customer || !items || items.length === 0) {
+      return res.status(400).json({ error: 'Customer details and items are required' });
+    }
+    const order = {
+      id: generateOrderId(),
+      customer,
+      items,
+      subtotal: parseFloat(subtotal) || 0,
+      deliveryFee: parseFloat(deliveryFee) || 0,
+      total: parseFloat(total) || 0,
+      status: 'Pending',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      ...req.body,
     };
-    orders.push(newOrder);
-    writeOrders(orders);
-    res.status(201).json(newOrder);
+    await ordersDB.insertAsync(order);
+    res.status(201).json(order);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create order' });
   }
 });
 
-// PATCH /api/orders/:id/status - update order status
-router.patch('/:id/status', (req, res) => {
+router.patch('/:id/status', async (req, res) => {
   try {
-    const orders = readOrders();
-    const idx = orders.findIndex(o => o.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Order not found' });
-
     const { status } = req.body;
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-    if (!status || !validStatuses.includes(status)) {
-      return res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
-    }
-
-    orders[idx].status = status;
-    orders[idx].updatedAt = new Date().toISOString();
-    writeOrders(orders);
-    res.json(orders[idx]);
+    const valid = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+    if (!valid.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    const numUpdated = await ordersDB.updateAsync({ id: req.params.id }, { $set: { status, updatedAt: new Date().toISOString() } }, {});
+    if (numUpdated === 0) return res.status(404).json({ error: 'Order not found' });
+    const updated = await ordersDB.findOneAsync({ id: req.params.id });
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update order status' });
   }

@@ -1,106 +1,86 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-
 const router = express.Router();
-const dataPath = path.join(__dirname, '../data/products.json');
+const { productsDB } = require('../db/database');
 
-function readProducts() {
-  const raw = fs.readFileSync(dataPath, 'utf-8');
-  return JSON.parse(raw);
+function generateId() {
+  return 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
 }
 
-function writeProducts(products) {
-  fs.writeFileSync(dataPath, JSON.stringify(products, null, 2), 'utf-8');
-}
-
-// GET /api/products - return all products
-router.get('/', (req, res) => {
+// GET all products
+router.get('/', async (req, res) => {
   try {
-    const products = readProducts();
-    const { category, featured, bestseller, search } = req.query;
-
-    let result = products;
-
-    if (category) {
-      result = result.filter(p => p.category.toLowerCase() === category.toLowerCase());
-    }
-    if (featured !== undefined) {
-      result = result.filter(p => p.featured === (featured === 'true'));
-    }
-    if (bestseller !== undefined) {
-      result = result.filter(p => p.bestseller === (bestseller === 'true'));
-    }
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
-      );
-    }
-
-    res.json(result);
+    const products = await productsDB.findAsync({});
+    products.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    res.json(products);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to read products' });
+    res.status(500).json({ error: 'Failed to fetch products' });
   }
 });
 
-// GET /api/products/:id - return single product
-router.get('/:id', (req, res) => {
+// GET single product
+router.get('/:id', async (req, res) => {
   try {
-    const products = readProducts();
-    const product = products.find(p => p.id === req.params.id);
+    const product = await productsDB.findOneAsync({ id: req.params.id });
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to read product' });
+    res.status(500).json({ error: 'Failed to fetch product' });
   }
 });
 
-// POST /api/products - create product
-router.post('/', (req, res) => {
+// POST create product
+router.post('/', async (req, res) => {
   try {
-    const products = readProducts();
-    const newProduct = {
-      id: `prod_${Date.now()}`,
-      ...req.body,
-      inStock: req.body.inStock !== undefined ? req.body.inStock : true,
-      featured: req.body.featured !== undefined ? req.body.featured : false,
-      bestseller: req.body.bestseller !== undefined ? req.body.bestseller : false,
-      rating: req.body.rating || 0,
-      reviews: req.body.reviews || 0,
-      stock: req.body.stock || 0,
+    const { name, price, originalPrice, category, description, image, stock, rating, reviews, inStock, featured, bestseller } = req.body;
+    if (!name || !price || !category) {
+      return res.status(400).json({ error: 'Name, price and category are required' });
+    }
+    const product = {
+      id: generateId(),
+      name: name.trim(),
+      price: parseFloat(price),
+      originalPrice: parseFloat(originalPrice) || parseFloat(price),
+      category: category.trim(),
+      description: (description || '').trim(),
+      image: image || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500&h=500&fit=crop',
+      rating: parseFloat(rating) || 4.0,
+      reviews: parseInt(reviews) || 0,
+      inStock: inStock !== false,
+      featured: featured === true || featured === 'true',
+      bestseller: bestseller === true || bestseller === 'true',
+      stock: parseInt(stock) || 10,
+      createdAt: new Date().toISOString(),
     };
-    products.push(newProduct);
-    writeProducts(products);
-    res.status(201).json(newProduct);
+    await productsDB.insertAsync(product);
+    res.status(201).json(product);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
 
-// PUT /api/products/:id - update product
-router.put('/:id', (req, res) => {
+// PUT update product
+router.put('/:id', async (req, res) => {
   try {
-    const products = readProducts();
-    const idx = products.findIndex(p => p.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Product not found' });
-    products[idx] = { ...products[idx], ...req.body, id: req.params.id };
-    writeProducts(products);
-    res.json(products[idx]);
+    const updateData = { ...req.body, updatedAt: new Date().toISOString() };
+    if (updateData.price) updateData.price = parseFloat(updateData.price);
+    if (updateData.originalPrice) updateData.originalPrice = parseFloat(updateData.originalPrice);
+    if (updateData.stock) updateData.stock = parseInt(updateData.stock);
+    const numUpdated = await productsDB.updateAsync({ id: req.params.id }, { $set: updateData }, {});
+    if (numUpdated === 0) return res.status(404).json({ error: 'Product not found' });
+    const updated = await productsDB.findOneAsync({ id: req.params.id });
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update product' });
   }
 });
 
-// DELETE /api/products/:id - delete product
-router.delete('/:id', (req, res) => {
+// DELETE product
+router.delete('/:id', async (req, res) => {
   try {
-    const products = readProducts();
-    const idx = products.findIndex(p => p.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Product not found' });
-    const deleted = products.splice(idx, 1)[0];
-    writeProducts(products);
-    res.json({ message: 'Product deleted', product: deleted });
+    const numRemoved = await productsDB.removeAsync({ id: req.params.id }, {});
+    if (numRemoved === 0) return res.status(404).json({ error: 'Product not found' });
+    res.json({ message: 'Product deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete product' });
   }

@@ -1,75 +1,107 @@
-import { useParams, Link, useLocation } from 'react-router-dom';
-import { CheckCircle, Package, Calendar, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { CheckCircle, Package, Truck, ArrowRight, Copy, Check } from 'lucide-react';
+import { getOrder } from '../services/api';
+import { formatPrice } from '../utils/formatPrice';
+import Footer from '../components/Footer';
 
 const OrderSuccessPage = () => {
   const { orderId } = useParams();
-  const location = useLocation();
-  const orderItems = location.state?.items || [];
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
-  // Delivery estimate
-  const today = new Date();
-  const minDate = new Date(today);
-  minDate.setDate(today.getDate() + 3);
-  const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + 5);
-  const dateFmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  useEffect(() => {
+    getOrder(orderId).then(o => { setOrder(o); setLoading(false); }).catch(() => setLoading(false));
+  }, [orderId]);
+
+  const copyOrderId = () => {
+    navigator.clipboard.writeText(orderId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full animate-spin-slow" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-lg w-full text-center">
-        {/* Success icon */}
-        <div className="flex justify-center mb-6">
-          <CheckCircle className="w-20 h-20 text-green-500 fill-green-50 stroke-green-500" />
-        </div>
-
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Order Placed Successfully!</h1>
-        <p className="text-gray-500 mb-6">Thank you for shopping with NMNORA. Your order is confirmed!</p>
-
-        {/* Order ID */}
-        <div className="bg-indigo-50 rounded-xl p-4 mb-6">
-          <div className="flex items-center justify-center gap-2 text-indigo-700">
-            <Package className="w-5 h-5" />
-            <span className="font-semibold text-sm">Order ID:</span>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-2xl mx-auto px-4 py-16">
+        <div className="bg-white rounded-3xl shadow-xl p-8 sm:p-12 text-center animate-scale-in">
+          {/* Success icon */}
+          <div className="relative inline-block mb-6">
+            <div className="absolute inset-0 bg-green-200 rounded-full blur-xl animate-pulse scale-150" />
+            <CheckCircle className="w-20 h-20 text-green-500 relative z-10" strokeWidth={1.5} />
           </div>
-          <p className="font-mono font-bold text-indigo-800 text-lg mt-1">{orderId}</p>
-        </div>
 
-        {/* Delivery estimate */}
-        <div className="bg-green-50 rounded-xl p-4 mb-6 flex items-center justify-center gap-2 text-green-700">
-          <Calendar className="w-5 h-5" />
-          <div className="text-sm">
-            <span className="font-semibold">Estimated Delivery:</span>{' '}
-            <span>{dateFmt(minDate)} – {dateFmt(maxDate)}</span>
-            <p className="text-xs text-green-600 mt-0.5">3–5 business days</p>
-          </div>
-        </div>
+          <h1 className="text-3xl font-black text-gray-900 mb-2">Order Placed Successfully!</h1>
+          <p className="text-gray-500 mb-8">Thank you for shopping with NMNORA. Your order is confirmed!</p>
 
-        {/* Items list (if available from state) */}
-        {orderItems.length > 0 && (
-          <div className="text-left mb-6">
-            <h3 className="font-semibold text-gray-900 mb-3">Items Ordered</h3>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {orderItems.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
-                  <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded" onError={e => { e.target.src = 'https://via.placeholder.com/40'; }} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
-                    <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                  </div>
-                  <span className="text-sm font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
+          {/* Order ID */}
+          <div className="bg-indigo-50 rounded-2xl p-5 mb-8 inline-block">
+            <div className="flex items-center gap-2 text-indigo-700 mb-1">
+              <Package size={16} />
+              <span className="text-sm font-semibold">Order ID</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="font-mono font-black text-indigo-800 text-lg">{orderId}</span>
+              <button onClick={copyOrderId} className="text-indigo-500 hover:text-indigo-700 transition-colors">
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+              </button>
             </div>
           </div>
-        )}
 
-        <Link
-          to="/shop"
-          className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl transition-colors"
-        >
-          Continue Shopping <ArrowRight className="w-4 h-4" />
-        </Link>
+          {/* Order details */}
+          {order && (
+            <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left">
+              <h3 className="font-bold text-gray-900 mb-4">Order Details</h3>
+              <div className="space-y-3">
+                {order.items?.map(item => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-xl" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">{formatPrice(item.price * item.quantity)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-gray-200 mt-4 pt-4">
+                <div className="flex justify-between text-sm font-bold text-gray-900">
+                  <span>Total Paid</span>
+                  <span className="text-indigo-600 text-lg">{formatPrice(order.total)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delivery info */}
+          <div className="flex items-center gap-3 bg-blue-50 rounded-2xl p-4 mb-8 text-left">
+            <Truck size={20} className="text-blue-600 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-blue-900">Estimated Delivery</p>
+              <p className="text-xs text-blue-600">3–5 business days (Same day in Chennai)</p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/shop" className="btn-primary inline-flex items-center justify-center gap-2 px-8">
+              Continue Shopping <ArrowRight size={16} />
+            </Link>
+            <Link to="/" className="btn-outline inline-flex items-center justify-center gap-2 px-8">
+              Go Home
+            </Link>
+          </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

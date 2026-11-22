@@ -1,183 +1,250 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
-import { getProducts } from '../services/api';
+import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
-import LoadingSpinner from '../components/LoadingSpinner';
+import Footer from '../components/Footer';
+import { getProducts } from '../services/api';
 
-const CATEGORIES = ['All', 'Electronics', 'Clothing', 'Home & Living', 'Books', 'Sports'];
+const CATEGORIES = ['iPhone', 'Cases & Covers', 'Temper Glass', 'Wireless Headphones', 'Wired Headphones'];
 const SORT_OPTIONS = [
   { value: 'default', label: 'Default' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'rating', label: 'Top Rated' },
-  { value: 'name', label: 'Name A–Z' },
+  { value: 'price-low', label: 'Price: Low to High' },
+  { value: 'price-high', label: 'Price: High to Low' },
+  { value: 'rating', label: 'Highest Rated' },
+  { value: 'newest', label: 'Newest First' },
 ];
 
 const ShopPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [localSearch, setLocalSearch] = useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
   const [sortBy, setSortBy] = useState('default');
-  const [maxPrice, setMaxPrice] = useState(1000);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    getProducts()
-      .then(data => setProducts(Array.isArray(data) ? data : []))
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false));
+    getProducts().then(p => { setProducts(p); setLoading(false); }).catch(() => setLoading(false));
   }, []);
 
+  // Sync URL params → local state
   useEffect(() => {
-    const cat = searchParams.get('category');
-    const q = searchParams.get('search');
-    if (cat) setSelectedCategory(cat);
-    if (q) { setSearchQuery(q); setLocalSearch(q); }
+    const search = searchParams.get('search') || '';
+    const category = searchParams.get('category') || 'All';
+    setSearchQuery(search);
+    setSelectedCategory(category);
   }, [searchParams]);
 
-  const handleSearch = (e) => {
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q)
+      );
+    }
+    if (selectedCategory !== 'All') {
+      result = result.filter(p => p.category === selectedCategory);
+    }
+    switch (sortBy) {
+      case 'price-low': return result.sort((a, b) => a.price - b.price);
+      case 'price-high': return result.sort((a, b) => b.price - a.price);
+      case 'rating': return result.sort((a, b) => b.rating - a.rating);
+      case 'newest': return result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      default: return result;
+    }
+  }, [products, searchQuery, selectedCategory, sortBy]);
+
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
-    setSearchQuery(localSearch);
     const params = {};
-    if (localSearch) params.search = localSearch;
+    if (searchQuery.trim()) params.search = searchQuery.trim();
     if (selectedCategory !== 'All') params.category = selectedCategory;
     setSearchParams(params);
   };
 
-  const filtered = products
-    .filter(p => selectedCategory === 'All' || p.category === selectedCategory)
-    .filter(p => !searchQuery || p.name?.toLowerCase().includes(searchQuery.toLowerCase()) || p.description?.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter(p => p.price <= maxPrice)
-    .sort((a, b) => {
-      if (sortBy === 'price-asc') return a.price - b.price;
-      if (sortBy === 'price-desc') return b.price - a.price;
-      if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
-      if (sortBy === 'name') return a.name?.localeCompare(b.name);
-      return 0;
-    });
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    const params = {};
+    if (searchQuery.trim()) params.search = searchQuery.trim();
+    if (cat !== 'All') params.category = cat;
+    setSearchParams(params);
+    setSidebarOpen(false);
+  };
 
-  const Sidebar = () => (
-    <div className="bg-white rounded-xl shadow-md p-5">
-      <h3 className="font-bold text-gray-900 mb-4">Categories</h3>
-      <div className="flex flex-col gap-1 mb-6">
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            onClick={() => { setSelectedCategory(cat); setSidebarOpen(false); }}
-            className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              selectedCategory === cat
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-600'
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedCategory('All');
+    setSortBy('default');
+    setSearchParams({});
+  };
 
-      <h3 className="font-bold text-gray-900 mb-3">Max Price: <span className="text-indigo-600">${maxPrice}</span></h3>
-      <input
-        type="range"
-        min={10}
-        max={1000}
-        value={maxPrice}
-        onChange={e => setMaxPrice(Number(e.target.value))}
-        className="w-full accent-indigo-600"
-      />
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
-        <span>$10</span>
-        <span>$1000</span>
-      </div>
-    </div>
-  );
+  const hasFilters = searchQuery || selectedCategory !== 'All' || sortBy !== 'default';
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Top bar */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <form onSubmit={handleSearch} className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2 flex-1 shadow-sm">
-            <Search className="text-gray-400 w-4 h-4 mr-2 flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={localSearch}
-              onChange={e => setLocalSearch(e.target.value)}
-              className="outline-none text-sm text-gray-700 w-full"
-            />
-            {localSearch && (
-              <button type="button" onClick={() => { setLocalSearch(''); setSearchQuery(''); }} className="ml-2">
-                <X className="text-gray-400 w-4 h-4" />
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-16 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center gap-4">
+            {/* Search */}
+            <form onSubmit={handleSearchSubmit} className="flex-1 max-w-md flex items-center bg-gray-100 rounded-xl px-4 py-2.5 gap-2">
+              <Search size={16} className="text-gray-400 flex-shrink-0" />
+              <input
+                type="text"
+                placeholder="Search iPhones, cases, headphones..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="bg-transparent outline-none text-sm text-gray-700 w-full placeholder-gray-400"
+              />
+              {searchQuery && (
+                <button type="button" onClick={() => { setSearchQuery(''); setSearchParams({}); }}>
+                  <X size={14} className="text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
+            </form>
+
+            {/* Sort */}
+            <div className="relative hidden sm:flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5">
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                className="bg-transparent outline-none text-sm text-gray-700 pr-6 cursor-pointer appearance-none"
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} className="text-gray-400 absolute right-3 pointer-events-none" />
+            </div>
+
+            {/* Filter button (mobile) */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700"
+            >
+              <SlidersHorizontal size={16} />
+              Filter
+            </button>
+
+            {hasFilters && (
+              <button onClick={clearFilters} className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1 whitespace-nowrap">
+                <X size={14} /> Clear
               </button>
             )}
-          </form>
-          <select
-            value={sortBy}
-            onChange={e => setSortBy(e.target.value)}
-            className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 shadow-sm outline-none"
-          >
-            {SORT_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="md:hidden flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm shadow-sm"
-          >
-            <SlidersHorizontal className="w-4 h-4" /> Filters
-          </button>
-        </div>
+          </div>
 
-        <div className="flex gap-6">
-          {/* Desktop Sidebar */}
-          <aside className="hidden md:block w-56 flex-shrink-0">
-            <Sidebar />
-          </aside>
-
-          {/* Mobile sidebar overlay */}
-          {sidebarOpen && (
-            <div className="fixed inset-0 z-40 md:hidden">
-              <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
-              <div className="absolute left-0 top-0 h-full w-64 bg-white shadow-xl p-4 overflow-y-auto z-50">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-bold">Filters</span>
-                  <button onClick={() => setSidebarOpen(false)}><X className="w-5 h-5" /></button>
-                </div>
-                <Sidebar />
-              </div>
+          {/* Active filters */}
+          {hasFilters && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
+                  Search: "{searchQuery}"
+                  <button onClick={() => { setSearchQuery(''); setSearchParams({}); }}><X size={12} /></button>
+                </span>
+              )}
+              {selectedCategory !== 'All' && (
+                <span className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
+                  {selectedCategory}
+                  <button onClick={() => handleCategorySelect('All')}><X size={12} /></button>
+                </span>
+              )}
+              <span className="text-xs text-gray-500 self-center">{filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found</span>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <aside className={`w-56 flex-shrink-0 ${sidebarOpen ? 'block' : 'hidden'} lg:block`}>
+            <div className="bg-white rounded-2xl shadow-md p-5 sticky top-36">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <SlidersHorizontal size={16} />
+                Categories
+              </h3>
+              <div className="space-y-1">
+                {['All', ...CATEGORIES].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategorySelect(cat)}
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                      ${selectedCategory === cat
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-700'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-6 pt-5 border-t border-gray-100">
+                <h3 className="font-bold text-gray-900 mb-3 text-sm">Sort By</h3>
+                <div className="space-y-1">
+                  {SORT_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setSortBy(opt.value)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-sm transition-all duration-200
+                        ${sortBy === opt.value ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </aside>
 
           {/* Product grid */}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-600">
-                Showing <span className="font-semibold text-gray-900">{filtered.length}</span> products
-              </p>
+          <main className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">
+                {selectedCategory === 'All' ? 'All Products' : selectedCategory}
+                {searchQuery && <span className="text-gray-500 font-normal text-base"> for "{searchQuery}"</span>}
+              </h2>
+              <span className="text-sm text-gray-500">{filteredProducts.length} products</span>
             </div>
 
             {loading ? (
-              <LoadingSpinner />
-            ) : filtered.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-5xl mb-4">🔍</p>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-500">Try adjusting your search or filters.</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="rounded-2xl overflow-hidden bg-white shadow-md">
+                    <div className="skeleton aspect-square" />
+                    <div className="p-4 space-y-2">
+                      <div className="skeleton h-3 w-1/3" />
+                      <div className="skeleton h-4 w-full" />
+                      <div className="skeleton h-4 w-2/3" />
+                      <div className="skeleton h-10 w-full mt-3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-24 animate-fade-in">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-500 mb-6">
+                  {searchQuery ? `No results for "${searchQuery}"` : 'No products in this category yet'}
+                </p>
+                <button onClick={clearFilters} className="btn-primary">
+                  Clear Filters
+                </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filtered.map(product => (
-                  <ProductCard key={product.id} product={product} />
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredProducts.map((product, i) => (
+                  <ProductCard key={product.id} product={product} index={i} />
                 ))}
               </div>
             )}
-          </div>
+          </main>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
