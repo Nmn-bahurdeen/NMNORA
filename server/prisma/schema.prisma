@@ -1,0 +1,81 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// NOTE: To switch to MySQL in production:
+// 1. Change provider = "mysql" above
+// 2. Set DATABASE_URL="mysql://user:password@localhost:3306/nmnora_db" in server/.env
+// 3. Run: npx prisma db push
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
+  phone     String?
+  address   String?
+  city      String?
+  pincode   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  name          String
+  price         Float
+  originalPrice Float?
+  category      String
+  description   String?
+  image         String
+  rating        Float       @default(4.8)
+  reviews       Int         @default(0)
+  stock         Int         @default(10)
+  inStock       Boolean     @default(true)
+  featured      Boolean     @default(false)
+  bestseller    Boolean     @default(false)
+  compatibility String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+  city            String
+  pincode         String
+  subtotal        Float
+  deliveryFee     Float       @default(0)
+  total           Float
+  status          String      @default("Pending") // Pending, Processing, Shipped, Delivered, Cancelled
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  productName String
+  price       Float
+  quantity    Int      @default(1)
+  image       String?
+  category    String?
+}

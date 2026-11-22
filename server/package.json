@@ -7,9 +7,13 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "@prisma/client": "^6.19.3",
+    "@seald-io/nedb": "^4.0.4",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.0.1",
-    "@seald-io/nedb": "^4.0.4"
+    "prisma": "^6.19.3"
   }
 }

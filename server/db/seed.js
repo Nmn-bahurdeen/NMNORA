@@ -1,3 +1,6 @@
+const bcrypt = require('bcryptjs');
+const prisma = require('./prisma');
+
 const products = [
   // ─── iPhones ───
   {
@@ -428,15 +431,153 @@ const products = [
   },
 ];
 
-async function seedDatabase(productsDB) {
-  // Always update with the latest verified product images and models
-  console.log('🌱 Refreshing database with exact NMNORA products & images...');
-  await productsDB.removeAsync({}, { multi: true });
-  for (const product of products) {
-    await productsDB.insertAsync(product);
+async function seedDatabase() {
+  try {
+    console.log('[Seed] Checking database initialization...');
+
+    // 1. Seed or update Admin user
+    const adminEmail = 'admin@nmnora.com';
+    const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+    const adminPasswordHash = await bcrypt.hash('AdminPassword@123', 10);
+    if (!existingAdmin) {
+      await prisma.user.create({
+        data: {
+          name: 'NMNORA Store Admin',
+          email: adminEmail,
+          password: adminPasswordHash,
+          role: 'ADMIN',
+          phone: '9943881393',
+          address: '123 Commerce Street',
+          city: 'Chennai',
+          pincode: '600048'
+        }
+      });
+      console.log('[Seed] Admin account created: admin@nmnora.com / AdminPassword@123');
+    }
+
+    // 2. Seed or update Demo Customer user
+    const customerEmail = 'customer@nmnora.com';
+    const existingCustomer = await prisma.user.findUnique({ where: { email: customerEmail } });
+    const customerPasswordHash = await bcrypt.hash('Customer@123', 10);
+    let customerUser = existingCustomer;
+    if (!existingCustomer) {
+      customerUser = await prisma.user.create({
+        data: {
+          name: 'Demo Customer',
+          email: customerEmail,
+          password: customerPasswordHash,
+          role: 'CUSTOMER',
+          phone: '9943881393',
+          address: '123 Commerce Street',
+          city: 'Chennai',
+          pincode: '600048'
+        }
+      });
+      console.log('[Seed] Demo customer account created: customer@nmnora.com / Customer@123');
+    }
+
+    // 3. Seed products if needed
+    const existingProductsCount = await prisma.product.count();
+    if (existingProductsCount === 0) {
+      console.log(`[Seed] Seeding ${products.length} products into database...`);
+      for (const p of products) {
+        await prisma.product.create({
+          data: {
+            id: p.id,
+            name: p.name,
+            price: parseFloat(p.price),
+            originalPrice: p.originalPrice ? parseFloat(p.originalPrice) : null,
+            category: p.category,
+            description: p.description || '',
+            image: p.image,
+            rating: p.rating || 4.8,
+            reviews: p.reviews || 0,
+            stock: p.stock !== undefined ? p.stock : 20,
+            inStock: p.inStock !== false,
+            featured: p.featured === true,
+            bestseller: p.bestseller === true,
+            compatibility: p.compatibility || null,
+          }
+        });
+      }
+      console.log(`[Seed] Successfully seeded ${products.length} products.`);
+    } else {
+      console.log(`[Seed] Products already present: ${existingProductsCount}`);
+    }
+
+    // 4. Seed sample orders if none exist
+    const orderCount = await prisma.order.count();
+    if (orderCount === 0 && customerUser) {
+      console.log('[Seed] Seeding sample demo orders for admin analytics...');
+      await prisma.order.create({
+        data: {
+          orderNumber: 'ORD-DEMO-001',
+          userId: customerUser.id,
+          customerName: customerUser.name,
+          customerEmail: customerUser.email,
+          customerPhone: '9943881393',
+          shippingAddress: '123 Commerce Street',
+          city: 'Chennai',
+          pincode: '600048',
+          subtotal: 154900,
+          deliveryFee: 0,
+          total: 154900,
+          status: 'Delivered',
+          items: {
+            create: [
+              {
+                productName: 'Apple iPhone 17 Pro Max',
+                price: 154900,
+                quantity: 1,
+                image: '/products/iphone-promax.svg',
+                category: 'iPhone'
+              }
+            ]
+          }
+        }
+      });
+
+      await prisma.order.create({
+        data: {
+          orderNumber: 'ORD-DEMO-002',
+          userId: customerUser.id,
+          customerName: customerUser.name,
+          customerEmail: customerUser.email,
+          customerPhone: '9943881393',
+          shippingAddress: '123 Commerce Street',
+          city: 'Chennai',
+          pincode: '600048',
+          subtotal: 2298,
+          deliveryFee: 0,
+          total: 2298,
+          status: 'Pending',
+          items: {
+            create: [
+              {
+                productName: 'Tempered Glass – iPhone 17 Pro / Pro Max',
+                price: 599,
+                quantity: 1,
+                image: '/products/temperglass.svg',
+                category: 'Temper Glass'
+              },
+              {
+                productName: 'MagSafe Leather Case – iPhone 16 Pro',
+                price: 1699,
+                quantity: 1,
+                image: '/products/phonecase.svg',
+                category: 'Cases & Covers'
+              }
+            ]
+          }
+        }
+      });
+      console.log('[Seed] Sample demo orders created.');
+    }
+
+    console.log('[Seed] Database initialization complete.');
+  } catch (error) {
+    console.error('[Seed Error]:', error);
   }
-  const count = await productsDB.countAsync({});
-  console.log(`✅ Seeded ${count} verified products successfully!`);
 }
 
 module.exports = seedDatabase;

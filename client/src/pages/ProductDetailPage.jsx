@@ -128,7 +128,7 @@ const ProductDetailPage = () => {
               </div>
               <span className="text-sm text-gray-500">{product.reviews?.toLocaleString('en-IN')} reviews</span>
               {product.inStock ? (
-                <span className="text-sm text-green-600 font-medium flex items-center gap-1"><Package size={14} /> In Stock ({product.stock} left)</span>
+                <span className="text-sm text-green-600 font-medium flex items-center gap-1"><Package size={14} /> In Stock</span>
               ) : (
                 <span className="text-sm text-red-500 font-medium">Out of Stock</span>
               )}
@@ -156,7 +156,7 @@ const ProductDetailPage = () => {
                   <Minus size={16} />
                 </button>
                 <span className="w-14 text-center font-bold text-gray-900">{quantity}</span>
-                <button onClick={() => setQuantity(Math.min(product.stock || 10, quantity + 1))} className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <button onClick={() => setQuantity(Math.min(10, quantity + 1))} className="w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors">
                   <Plus size={16} />
                 </button>
               </div>

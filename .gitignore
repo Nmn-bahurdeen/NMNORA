@@ -27,3 +27,7 @@ Thumbs.db
 # Vite cache
 client/.vite/
 client/node_modules/.vite-temp/
+*.db
+*.db-journal
+**/*.db
+**/*.db-journal

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const getCategoryFallback = (name = '', category = '') => {
   const n = (name + ' ' + category).toLowerCase();
@@ -18,6 +18,12 @@ const ProductImage = ({ src, alt = '', name = '', category = '', className = '',
   const [hasError, setHasError] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  useEffect(() => {
+    setImgSrc(src || fallback);
+    setHasError(false);
+    setLoaded(false);
+  }, [src, fallback]);
+
   const handleError = () => {
     if (!hasError) {
       setHasError(true);
@@ -26,18 +32,20 @@ const ProductImage = ({ src, alt = '', name = '', category = '', className = '',
   };
 
   return (
-    <div className={`relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-900 to-black ${className}`}>
-      {/* Skeleton while loading */}
+    <div className={`relative overflow-hidden bg-slate-950 flex items-center justify-center ${className}`}>
+      {/* Subtle pulse placeholder while loading */}
       {!loaded && (
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 animate-pulse" />
+        <div className="absolute inset-0 bg-slate-900 animate-pulse" />
       )}
       <img
-        src={imgSrc}
-        alt={alt || name}
+        src={imgSrc || fallback}
+        alt={alt || name || 'Product Image'}
         onError={handleError}
         onLoad={() => setLoaded(true)}
         loading={priority ? 'eager' : 'lazy'}
-        className={`w-full h-full object-cover transition-all duration-500 ${loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+        className={`w-full h-full object-contain p-2 transition-all duration-300 ${
+          loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}
       />
     </div>
   );

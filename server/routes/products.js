@@ -1,87 +1,188 @@
 const express = require('express');
 const router = express.Router();
-const { productsDB } = require('../db/database');
+const prisma = require('../db/prisma');
+const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
-function generateId() {
-  return 'prod_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+function sanitizeProductForCustomer(product) {
+  if (!product) return null;
+  // Never expose exact internal stock quantities to customers or guests
+  const { stock, ...safeProduct } = product;
+  return {
+    ...safeProduct,
+    inStock: stock > 0 && product.inStock !== false,
+    availability: stock > 0 && product.inStock !== false ? 'In Stock' : 'Out of Stock'
+  };
 }
 
-// GET all products
-router.get('/', async (req, res) => {
+// GET /api/products - Public list of products
+// Customers see "In Stock" / "Out of Stock"; Admins see exact stock
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const products = await productsDB.findAsync({});
-    products.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    res.json(products);
+    const { category, search, compatibility } = req.query;
+    const where = {};
+
+    if (category && category !== 'All') {
+      where.category = category;
+    }
+
+    if (compatibility) {
+      where.compatibility = compatibility;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { description: { contains: search } },
+        { category: { contains: search } },
+      ];
+    }
+
+    const products = await prisma.product.findMany({
+      where,
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const isAdmin = req.user && req.user.role === 'ADMIN';
+
+    if (isAdmin) {
+      return res.json(products);
+    }
+
+    // Sanitize for customers and guests: strip raw stock quantities
+    const sanitized = products.map(sanitizeProductForCustomer);
+    res.json(sanitized);
   } catch (err) {
+    console.error('[Get Products Error]:', err);
     res.status(500).json({ error: 'Failed to fetch products' });
   }
 });
 
-// GET single product
-router.get('/:id', async (req, res) => {
+// GET /api/products/:id - Single product details
+router.get('/:id', authenticateToken, async (req, res) => {
   try {
-    const product = await productsDB.findOneAsync({ id: req.params.id });
-    if (!product) return res.status(404).json({ error: 'Product not found' });
-    res.json(product);
+    const product = await prisma.product.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const isAdmin = req.user && req.user.role === 'ADMIN';
+    if (isAdmin) {
+      return res.json(product);
+    }
+
+    res.json(sanitizeProductForCustomer(product));
   } catch (err) {
+    console.error('[Get Product Error]:', err);
     res.status(500).json({ error: 'Failed to fetch product' });
   }
 });
 
-// POST create product
-router.post('/', async (req, res) => {
+// POST /api/products - Admin only: Add new product
+router.post('/', requireAdmin, async (req, res) => {
   try {
-    const { name, price, originalPrice, category, description, image, stock, rating, reviews, inStock, featured, bestseller } = req.body;
-    if (!name || !price || !category) {
-      return res.status(400).json({ error: 'Name, price and category are required' });
+    const {
+      name,
+      price,
+      originalPrice,
+      category,
+      description,
+      image,
+      stock,
+      rating,
+      reviews,
+      inStock,
+      featured,
+      bestseller,
+      compatibility,
+    } = req.body;
+
+    if (!name || price === undefined || !category) {
+      return res.status(400).json({ error: 'Name, price, and category are required' });
     }
-    const product = {
-      id: generateId(),
-      name: name.trim(),
-      price: parseFloat(price),
-      originalPrice: parseFloat(originalPrice) || parseFloat(price),
-      category: category.trim(),
-      description: (description || '').trim(),
-      image: image || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=500&h=500&fit=crop',
-      rating: parseFloat(rating) || 4.0,
-      reviews: parseInt(reviews) || 0,
-      inStock: inStock !== false,
-      featured: featured === true || featured === 'true',
-      bestseller: bestseller === true || bestseller === 'true',
-      stock: parseInt(stock) || 10,
-      createdAt: new Date().toISOString(),
-    };
-    await productsDB.insertAsync(product);
-    res.status(201).json(product);
+
+    const newProduct = await prisma.product.create({
+      data: {
+        name: name.trim(),
+        price: parseFloat(price),
+        originalPrice: originalPrice ? parseFloat(originalPrice) : parseFloat(price),
+        category: category.trim(),
+        description: (description || '').trim(),
+        image: image || '/products/iphone-promax.svg',
+        stock: parseInt(stock) !== undefined && !isNaN(parseInt(stock)) ? parseInt(stock) : 10,
+        rating: parseFloat(rating) || 4.8,
+        reviews: parseInt(reviews) || 0,
+        inStock: inStock !== false,
+        featured: featured === true || featured === 'true',
+        bestseller: bestseller === true || bestseller === 'true',
+        compatibility: compatibility ? compatibility.trim() : null,
+      },
+    });
+
+    res.status(201).json(newProduct);
   } catch (err) {
-    console.error(err);
+    console.error('[Create Product Error]:', err);
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
 
-// PUT update product
-router.put('/:id', async (req, res) => {
+// PUT /api/products/:id - Admin only: Update product
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
-    const updateData = { ...req.body, updatedAt: new Date().toISOString() };
-    if (updateData.price) updateData.price = parseFloat(updateData.price);
-    if (updateData.originalPrice) updateData.originalPrice = parseFloat(updateData.originalPrice);
-    if (updateData.stock) updateData.stock = parseInt(updateData.stock);
-    const numUpdated = await productsDB.updateAsync({ id: req.params.id }, { $set: updateData }, {});
-    if (numUpdated === 0) return res.status(404).json({ error: 'Product not found' });
-    const updated = await productsDB.findOneAsync({ id: req.params.id });
+    const {
+      name,
+      price,
+      originalPrice,
+      category,
+      description,
+      image,
+      stock,
+      rating,
+      reviews,
+      inStock,
+      featured,
+      bestseller,
+      compatibility,
+    } = req.body;
+
+    const data = {};
+    if (name !== undefined) data.name = name.trim();
+    if (price !== undefined) data.price = parseFloat(price);
+    if (originalPrice !== undefined) data.originalPrice = originalPrice ? parseFloat(originalPrice) : null;
+    if (category !== undefined) data.category = category.trim();
+    if (description !== undefined) data.description = description.trim();
+    if (image !== undefined) data.image = image;
+    if (stock !== undefined) data.stock = parseInt(stock);
+    if (rating !== undefined) data.rating = parseFloat(rating);
+    if (reviews !== undefined) data.reviews = parseInt(reviews);
+    if (inStock !== undefined) data.inStock = inStock === true || inStock === 'true';
+    if (featured !== undefined) data.featured = featured === true || featured === 'true';
+    if (bestseller !== undefined) data.bestseller = bestseller === true || bestseller === 'true';
+    if (compatibility !== undefined) data.compatibility = compatibility ? compatibility.trim() : null;
+
+    const updated = await prisma.product.update({
+      where: { id: req.params.id },
+      data,
+    });
+
     res.json(updated);
   } catch (err) {
+    console.error('[Update Product Error]:', err);
     res.status(500).json({ error: 'Failed to update product' });
   }
 });
 
-// DELETE product
-router.delete('/:id', async (req, res) => {
+// DELETE /api/products/:id - Admin only: Delete product
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
-    const numRemoved = await productsDB.removeAsync({ id: req.params.id }, {});
-    if (numRemoved === 0) return res.status(404).json({ error: 'Product not found' });
-    res.json({ message: 'Product deleted successfully' });
+    await prisma.product.delete({
+      where: { id: req.params.id },
+    });
+    res.json({ message: 'Product deleted successfully', id: req.params.id });
   } catch (err) {
+    console.error('[Delete Product Error]:', err);
     res.status(500).json({ error: 'Failed to delete product' });
   }
 });
