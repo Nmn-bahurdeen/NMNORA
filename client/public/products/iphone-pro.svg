@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#090d16" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="titaniumPro" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a4d55"/>
+      <stop offset="35%" stop-color="#2a2d34"/>
+      <stop offset="70%" stop-color="#1d2026"/>
+      <stop offset="100%" stop-color="#121418"/>
+    </linearGradient>
+    <linearGradient id="titaniumEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8a8f9d"/>
+      <stop offset="50%" stop-color="#4e525d"/>
+      <stop offset="100%" stop-color="#2c2f38"/>
+    </linearGradient>
+    <linearGradient id="lensRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <radialGradient id="lensReflect" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="25%" stop-color="#0284c7" stop-opacity="0.6"/>
+      <stop offset="60%" stop-color="#0f172a" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <filter id="proShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="25" stdDeviation="30" flood-color="#000000" flood-opacity="0.75"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#6366f1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#bgGlow)"/>
+
+  <!-- Phone Body -->
+  <g filter="url(#proShadow)">
+    <!-- Outer Titanium Rim -->
+    <rect x="170" y="70" width="260" height="460" rx="52" fill="url(#titaniumEdge)" stroke="#94a3b8" stroke-width="2"/>
+    <!-- Back Matte Glass -->
+    <rect x="174" y="74" width="252" height="452" rx="48" fill="url(#titaniumPro)"/>
+
+    <!-- Subtle Glass Sheen diagonal -->
+    <path d="M 180,80 L 390,80 L 180,450 Z" fill="#ffffff" opacity="0.04"/>
+
+    <!-- Triple Camera Island (Rounded Square) -->
+    <rect x="188" y="88" width="128" height="132" rx="36" fill="#1b1e24" stroke="#475569" stroke-width="1.5" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.5))"/>
+    <rect x="190" y="90" width="124" height="128" rx="34" fill="#232730" opacity="0.8"/>
+
+    <!-- Top Left Lens (Main 48MP) -->
+    <circle cx="228" cy="126" r="23" fill="url(#lensRing)" stroke="#64748b" stroke-width="2"/>
+    <circle cx="228" cy="126" r="18" fill="url(#lensReflect)"/>
+    <circle cx="224" cy="122" r="5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Bottom Left Lens (Telephoto 5x) -->
+    <circle cx="228" cy="182" r="23" fill="url(#lensRing)" stroke="#64748b" stroke-width="2"/>
+    <circle cx="228" cy="182" r="18" fill="url(#lensReflect)"/>
+    <circle cx="224" cy="178" r="5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Right Center Lens (Ultra Wide) -->
+    <circle cx="276" cy="154" r="23" fill="url(#lensRing)" stroke="#64748b" stroke-width="2"/>
+    <circle cx="276" cy="154" r="18" fill="url(#lensReflect)"/>
+    <circle cx="272" cy="150" r="5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- LiDAR Sensor (Bottom Right) -->
+    <circle cx="282" cy="194" r="8" fill="#090d16" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- TrueTone Flash (Top Right) -->
+    <circle cx="280" cy="114" r="9" fill="#fef08a" stroke="#ca8a04" stroke-width="1" opacity="0.9"/>
+    <circle cx="280" cy="114" r="4" fill="#ffffff"/>
+
+    <!-- Microphone Dot -->
+    <circle cx="298" cy="154" r="2" fill="#0f172a"/>
+
+    <!-- Apple Logo (Reflective Mirror Finish) -->
+    <path d="M 297,298 C 298,294 301,291 306,290 C 304,295 301,298 297,298 Z M 309,301 C 305,301 302,303 299,303 C 296,303 294,301 290,301 C 283,301 278,307 278,318 C 278,328 285,339 292,339 C 295,339 297,337 300,337 C 303,337 305,339 308,339 C 314,339 320,329 321,324 C 315,321 314,312 319,308 C 316,303 312,301 309,301 Z" fill="#94a3b8" opacity="0.85"/>
+  </g>
+
+  <!-- Pro Badge Overlay -->
+  <g transform="translate(430, 480)">
+    <rect width="130" height="42" rx="21" fill="#4f46e5" opacity="0.9"/>
+    <text x="65" y="26" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="bold" fill="#ffffff" text-anchor="middle">PRO MODEL</text>
+  </g>
+</svg>

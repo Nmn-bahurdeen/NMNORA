@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
 import { createOrder } from '../services/api';
 import { CreditCard, Lock, ArrowLeft, AlertCircle } from 'lucide-react';
+import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 
 const CheckoutPage = () => {
@@ -152,7 +153,13 @@ const CheckoutPage = () => {
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                 {cartItems.map(item => (
                   <div key={item.id} className="flex gap-3">
-                    <img src={item.image} alt={item.name} className="w-14 h-14 object-cover rounded-xl flex-shrink-0" />
+                    <ProductImage
+                      src={item.image}
+                      alt={item.name}
+                      name={item.name}
+                      category={item.category}
+                      className="w-14 h-14 rounded-xl flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>

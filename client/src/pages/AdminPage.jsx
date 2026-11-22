@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { formatPrice } from '../utils/formatPrice';
 import { getProducts, createProduct, updateProduct, deleteProduct, getOrders, updateOrderStatus } from '../services/api';
 import { Package, ShoppingBag, IndianRupee, TrendingUp, Plus, Pencil, Trash2, X, Eye, AlertTriangle, Shield, ChevronDown } from 'lucide-react';
+import ProductImage from '../components/ProductImage';
 
 const CATEGORIES = ['iPhone', 'Cases & Covers', 'Temper Glass', 'Wireless Headphones', 'Wired Headphones'];
 const ORDER_STATUSES = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
@@ -163,7 +164,13 @@ const AdminPage = () => {
                       <tr key={product.id || product._id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded-lg flex-shrink-0" />
+                            <ProductImage
+                              src={product.image}
+                              alt={product.name}
+                              name={product.name}
+                              category={product.category}
+                              className="w-10 h-10 rounded-lg flex-shrink-0"
+                            />
                             <span className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</span>
                           </div>
                         </td>
@@ -232,7 +239,13 @@ const AdminPage = () => {
                     <div className="flex flex-wrap gap-3 mb-3">
                       {order.items?.map(item => (
                         <div key={item.id} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                          <img src={item.image} alt={item.name} className="w-8 h-8 object-cover rounded" />
+                          <ProductImage
+                            src={item.image}
+                            alt={item.name}
+                            name={item.name}
+                            category={item.category}
+                            className="w-8 h-8 rounded flex-shrink-0"
+                          />
                           <div>
                             <p className="text-xs font-medium text-gray-900 truncate max-w-[150px]">{item.name}</p>
                             <p className="text-xs text-gray-500">×{item.quantity}</p>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="baseBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#020617" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="baseBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="50%" stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="baseEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+    <radialGradient id="baseLens" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="35%" stop-color="#0369a1" stop-opacity="0.7"/>
+      <stop offset="80%" stop-color="#090d16" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <filter id="baseShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="25" stdDeviation="28" flood-color="#000000" flood-opacity="0.7"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="#3b82f6" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="600" fill="url(#baseBg)"/>
+
+  <!-- Phone Body -->
+  <g filter="url(#baseShadow)">
+    <rect x="175" y="70" width="250" height="460" rx="48" fill="url(#baseEdge)" stroke="#93c5fd" stroke-width="2"/>
+    <rect x="179" y="74" width="242" height="452" rx="44" fill="url(#baseBody)"/>
+
+    <path d="M 185,80 L 380,80 L 185,450 Z" fill="#ffffff" opacity="0.08"/>
+
+    <!-- Dual Camera Island -->
+    <rect x="195" y="90" width="95" height="150" rx="38" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1.5" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.5))"/>
+
+    <!-- Lens 1 (Top) -->
+    <circle cx="242.5" cy="130" r="24" fill="#0f172a" stroke="#93c5fd" stroke-width="2"/>
+    <circle cx="242.5" cy="130" r="19" fill="url(#baseLens)"/>
+    <circle cx="238" cy="125" r="5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Lens 2 (Bottom) -->
+    <circle cx="242.5" cy="200" r="24" fill="#0f172a" stroke="#93c5fd" stroke-width="2"/>
+    <circle cx="242.5" cy="200" r="19" fill="url(#baseLens)"/>
+    <circle cx="238" cy="195" r="5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Flash -->
+    <circle cx="242.5" cy="165" r="7" fill="#fef08a" stroke="#eab308" stroke-width="1"/>
+    <circle cx="242.5" cy="165" r="3" fill="#ffffff"/>
+
+    <!-- Apple Logo -->
+    <path d="M 297,300 C 298,296 301,293 306,292 C 304,297 301,300 297,300 Z M 309,303 C 305,303 302,305 299,305 C 296,305 294,303 290,303 C 283,303 278,309 278,320 C 278,330 285,341 292,341 C 295,341 297,339 300,339 C 303,339 305,341 308,341 C 314,341 320,331 321,326 C 315,323 314,314 319,310 C 316,305 312,303 309,303 Z" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>

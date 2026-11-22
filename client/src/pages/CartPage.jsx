@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowLeft, Truck, Shield } from 'lucide-react';
+import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 
 const CartPage = () => {
@@ -50,7 +51,13 @@ const CartPage = () => {
               >
                 {/* Image */}
                 <Link to={`/product/${item.id}`} className="flex-shrink-0">
-                  <img src={item.image} alt={item.name} className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-xl hover:scale-105 transition-transform duration-300" />
+                  <ProductImage
+                    src={item.image}
+                    alt={item.name}
+                    name={item.name}
+                    category={item.category}
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl hover:scale-105 transition-transform duration-300"
+                  />
                 </Link>
 
                 {/* Details */}

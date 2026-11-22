@@ -1,166 +1,332 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Truck, RefreshCw, Award, ChevronRight, Smartphone, Package } from 'lucide-react';
+import { Shield, Truck, RefreshCw, Award, ChevronRight, Smartphone, Sparkles, Zap, Headphones, CheckCircle2, Star } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 import { getProducts } from '../services/api';
+import { formatPrice } from '../utils/formatPrice';
 
 const CATEGORIES = [
-  { name: 'iPhones', key: 'iPhone', emoji: '📱', desc: 'All models from 11 to 17', color: 'from-indigo-500 to-purple-600' },
-  { name: 'Cases & Covers', key: 'Cases & Covers', emoji: '🛡️', desc: 'Silicone, Leather & MagSafe', color: 'from-pink-500 to-rose-600' },
-  { name: 'Temper Glass', key: 'Temper Glass', emoji: '💎', desc: '9H hardness protection', color: 'from-cyan-500 to-blue-600' },
-  { name: 'Wireless', key: 'Wireless Headphones', emoji: '🎧', desc: 'AirPods & TWS earbuds', color: 'from-emerald-500 to-teal-600' },
-  { name: 'Wired', key: 'Wired Headphones', emoji: '🎵', desc: 'EarPods & earphones', color: 'from-amber-500 to-orange-600' },
+  { name: 'iPhones (11 to 17 Pro Max)', key: 'iPhone', icon: Smartphone, desc: 'Flagship & Pro Series', gradient: 'from-blue-600 via-indigo-600 to-purple-700', badge: '100% Genuine' },
+  { name: 'Cases & Covers', key: 'Cases & Covers', icon: Shield, desc: 'MagSafe & Armor Covers', gradient: 'from-purple-600 via-pink-600 to-rose-600', badge: 'Military Drop' },
+  { name: 'Temper Glass', key: 'Temper Glass', icon: Sparkles, desc: '9H Sapphire & Privacy', gradient: 'from-cyan-500 via-blue-600 to-indigo-700', badge: 'Anti-Scratch' },
+  { name: 'Wireless Audio', key: 'Wireless Headphones', icon: Zap, desc: 'AirPods & TWS Earbuds', gradient: 'from-emerald-500 via-teal-600 to-cyan-700', badge: 'Spatial Audio' },
+  { name: 'Wired EarPods', key: 'Wired Headphones', icon: Headphones, desc: 'Lightning & USB-C Original', gradient: 'from-amber-500 via-orange-600 to-red-600', badge: 'Lossless DAC' },
 ];
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [heroRotate, setHeroRotate] = useState({ x: -12, y: 18 });
+  const heroRef = useRef(null);
 
   useEffect(() => {
-    getProducts().then(p => { setProducts(p); setLoading(false); }).catch(() => setLoading(false));
+    getProducts()
+      .then(p => { setProducts(p); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
+  const handleHeroMouseMove = (e) => {
+    if (!heroRef.current) return;
+    const rect = heroRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    setHeroRotate({
+      x: -(y / (rect.height / 2)) * 18,
+      y: (x / (rect.width / 2)) * 24,
+    });
+  };
+
+  const handleHeroMouseLeave = () => {
+    setHeroRotate({ x: -8, y: 14 });
+  };
+
   const featured = products.filter(p => p.featured).slice(0, 8);
+  const proSeries = products.filter(p => p.name?.toLowerCase().includes('pro')).slice(0, 4);
   const bestsellers = products.filter(p => p.bestseller).slice(0, 4);
-  const latestIphones = products.filter(p => p.category === 'iPhone').slice(-4).reverse();
 
   return (
-    <div className="min-h-screen">
-      {/* ── Hero ── */}
-      <section className="bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 text-white min-h-[88vh] flex items-center relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-900/10 rounded-full" />
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* ── 3D Interactive Hero Section ── */}
+      <section
+        ref={heroRef}
+        onMouseMove={handleHeroMouseMove}
+        onMouseLeave={handleHeroMouseLeave}
+        className="relative min-h-[92vh] bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white flex items-center overflow-hidden py-16"
+        style={{ perspective: '1600px' }}
+      >
+        {/* Animated Background 3D Glow Orbs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-indigo-600/30 rounded-full blur-[130px] animate-pulse" />
+          <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-600/25 rounded-full blur-[160px]" />
+          <div className="absolute top-10 right-1/3 w-80 h-80 bg-cyan-500/20 rounded-full blur-[110px]" />
+          {/* Subtle 3D grid line floor */}
+          <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-slate-950 to-transparent opacity-80" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
-          <div className="animate-slide-left">
-            <div className="inline-flex items-center gap-2 bg-indigo-600/20 border border-indigo-500/30 rounded-full px-4 py-1.5 text-indigo-300 text-sm font-medium mb-6">
-              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
-              Chennai's #1 iPhone Store
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 grid lg:grid-cols-12 gap-12 items-center">
+          {/* Left Text Column */}
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            {/* Live Store Pill */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-indigo-300 text-xs font-semibold shadow-inner">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+              <span>CHENNAI'S PREMIER APPLE DESTINATION</span>
+              <span className="text-white/40">•</span>
+              <span className="text-white">Shop Open Now</span>
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6">
-              Premium<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">iPhones</span><br />
-              in Chennai
+
+            <h1 className="text-4xl sm:text-6xl xl:text-7xl font-black tracking-tight leading-[1.08]">
+              iPhone 11 to 17 <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 drop-shadow-[0_2px_25px_rgba(245,158,11,0.3)]">
+                PRO & PRO MAX
+              </span>
             </h1>
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-md">
-              100% authentic Apple products — iPhones, cases, temper glass & headphones. Delivered across India.
+
+            <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              Experience the pinnacle of Apple technology. 100% brand new, authentic Apple devices, genuine 9H tempered glass, MagSafe cases, and pure studio audio in Chennai.
             </p>
-            <div className="flex flex-wrap gap-4 mb-10">
-              <Link to="/shop?category=iPhone" className="btn-primary text-base px-8 py-3 rounded-full">
-                Shop iPhones
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-2">
+              <Link
+                to="/shop?category=iPhone"
+                className="px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base shadow-xl shadow-indigo-600/40 hover:shadow-indigo-500/60 transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
+              >
+                <span>Explore All iPhones</span>
+                <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link to="/shop" className="border border-white/20 hover:border-white/40 text-white px-8 py-3 rounded-full font-semibold transition-all duration-200 hover:bg-white/5">
-                All Products
+              <Link
+                to="/shop"
+                className="px-8 py-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-base backdrop-blur-md border border-white/15 transition-all duration-300 hover:-translate-y-1"
+              >
+                View Accessories
               </Link>
             </div>
-            <div className="flex flex-wrap gap-6 text-sm text-gray-400">
-              {[
-                { icon: Shield, text: '1 Year Warranty' },
-                { icon: Truck, text: 'Free Delivery' },
-                { icon: Award, text: '100% Authentic' },
-                { icon: RefreshCw, text: '7-Day Returns' },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2">
-                  <Icon size={15} className="text-indigo-400" />
-                  <span>{text}</span>
+
+            {/* Trust Badges */}
+            <div className="pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs text-slate-300">
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <Shield size={16} className="text-emerald-400" />
+                <span>1 Year Warranty</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <Truck size={16} className="text-cyan-400" />
+                <span>Fast Chennai Delivery</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <Award size={16} className="text-amber-400" />
+                <span>100% Genuine</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center lg:justify-start">
+                <RefreshCw size={16} className="text-purple-400" />
+                <span>Easy Returns</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right 3D Interactive Device Showcase */}
+          <div className="lg:col-span-5 flex justify-center items-center">
+            <div
+              className="relative w-72 sm:w-80 h-[480px] sm:h-[520px] transition-transform duration-200 ease-out transform-gpu cursor-grab"
+              style={{
+                transform: `rotateX(${heroRotate.x}deg) rotateY(${heroRotate.y}deg)`,
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {/* Backglow Ambient */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/30 to-indigo-600/30 rounded-[50px] blur-2xl -z-10 scale-95" />
+
+              {/* 3D Phone Body */}
+              <div
+                className="w-full h-full rounded-[50px] bg-gradient-to-b from-stone-800 via-stone-900 to-black p-3.5 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(245,158,11,0.25)] border-[3px] border-amber-300/40 relative overflow-hidden"
+                style={{ transform: 'translateZ(30px)' }}
+              >
+                {/* Screen Reflection Sheen */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/15 via-white/5 to-transparent pointer-events-none z-20 rounded-[44px]" />
+
+                {/* Display Area */}
+                <div className="w-full h-full rounded-[42px] bg-slate-950 overflow-hidden relative flex flex-col justify-between p-6 border border-stone-700/50">
+                  {/* Dynamic Island */}
+                  <div className="flex justify-center z-30">
+                    <div className="w-28 h-6 bg-black rounded-full border border-stone-800 flex items-center justify-between px-3">
+                      <div className="w-2.5 h-2.5 rounded-full bg-blue-950 border border-blue-800" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    </div>
+                  </div>
+
+                  {/* Inside Display Content */}
+                  <div className="space-y-4 my-auto text-center z-10">
+                    <div className="w-24 h-24 mx-auto rounded-3xl overflow-hidden shadow-2xl border border-amber-400/30">
+                      <img src="/products/iphone-promax.svg" alt="iPhone 17 Pro Max" className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">
+                        TITANIUM FLAGSHIP
+                      </span>
+                      <h3 className="text-xl font-black text-white mt-2">iPhone 17 Pro Max</h3>
+                      <p className="text-amber-300 font-extrabold text-2xl mt-1">₹1,54,900</p>
+                    </div>
+                    <div className="text-xs text-slate-400 space-y-1">
+                      <p>Triple 48MP Periscope Telephoto</p>
+                      <p>A19 Pro Chip with Apple Intelligence</p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Home Indicator */}
+                  <div className="w-32 h-1 bg-white/40 rounded-full mx-auto" />
                 </div>
+              </div>
+
+              {/* Floating 3D Floating Badge 1 */}
+              <div
+                className="absolute -top-4 -left-6 bg-slate-900/95 backdrop-blur-xl border border-amber-400/40 text-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 z-30 animate-float"
+                style={{ transform: 'translateZ(70px)' }}
+              >
+                <div className="w-9 h-9 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-black">
+                  <Star size={18} className="fill-amber-400 text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-amber-300 font-semibold uppercase">Customer Rating</p>
+                  <p className="text-sm font-black text-white">4.9 / 5.0 (2,400+)</p>
+                </div>
+              </div>
+
+              {/* Floating 3D Floating Badge 2 */}
+              <div
+                className="absolute -bottom-6 -right-6 bg-slate-900/95 backdrop-blur-xl border border-indigo-400/40 text-white rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3 z-30 animate-float"
+                style={{ transform: 'translateZ(80px)', animationDelay: '1.2s' }}
+              >
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-black">
+                  <CheckCircle2 size={18} className="text-indigo-400" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-indigo-300 font-semibold uppercase">Authenticity</p>
+                  <p className="text-sm font-black text-white">100% Genuine Apple</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3D Categories Grid ── */}
+      <section className="py-20 bg-slate-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">
+              EXPLORE OUR COLLECTION
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-3 tracking-tight">
+              Curated Apple Mobile Store
+            </h2>
+            <p className="text-gray-500 mt-2 text-sm sm:text-base">
+              Only authentic iPhone models, shatter-resistant temper glass, MagSafe cases, and audiophile earphones.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {CATEGORIES.map((cat, idx) => {
+              const Icon = cat.icon;
+              return (
+                <Link
+                  key={cat.key}
+                  to={`/shop?category=${encodeURIComponent(cat.key)}`}
+                  className="group relative bg-white rounded-3xl p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-2 flex flex-col justify-between overflow-hidden"
+                  style={{ animationDelay: `${idx * 0.1}s` }}
+                >
+                  {/* Top Category Badge */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.gradient} text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon size={26} />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                      {cat.badge}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="font-extrabold text-gray-900 text-base group-hover:text-indigo-600 transition-colors">
+                      {cat.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {cat.desc}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-bold text-indigo-600">
+                    <span>Browse Products</span>
+                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Featured Pro Showcase Section ── */}
+      {proSeries.length > 0 && (
+        <section className="py-20 bg-slate-950 text-white relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/30">
+                  FLAGSHIP PERFORMANCE
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-black text-white mt-2">
+                  iPhone Pro & Pro Max Lineup
+                </h2>
+                <p className="text-slate-400 text-sm mt-1">
+                  Engineered with titanium, triple Pro camera system, and ultra-high dynamic range displays.
+                </p>
+              </div>
+              <Link
+                to="/shop?category=iPhone"
+                className="text-amber-400 hover:text-amber-300 font-bold text-sm flex items-center gap-1.5"
+              >
+                <span>View all Pro Models</span>
+                <ChevronRight size={16} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {proSeries.map((product, i) => (
+                <ProductCard key={product.id} product={product} index={i} />
               ))}
             </div>
           </div>
+        </section>
+      )}
 
-          {/* iPhone visual */}
-          <div className="hidden md:flex justify-center items-center animate-slide-right">
-            <div className="relative">
-              <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-3xl scale-110" />
-              <img
-                src="https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=600&h=600&fit=crop&auto=format"
-                alt="iPhone Collection"
-                className="w-72 h-72 lg:w-96 lg:h-96 object-cover rounded-3xl shadow-2xl animate-float relative z-10"
-              />
-              {/* Floating badges */}
-              <div className="absolute -left-8 top-12 bg-white text-gray-900 rounded-2xl px-4 py-3 shadow-xl animate-fade-in z-20" style={{ animationDelay: '0.5s' }}>
-                <p className="text-xs text-gray-500">Latest</p>
-                <p className="font-bold text-sm">iPhone 17 Pro Max</p>
-              </div>
-              <div className="absolute -right-8 bottom-12 bg-indigo-600 text-white rounded-2xl px-4 py-3 shadow-xl animate-fade-in z-20" style={{ animationDelay: '0.8s' }}>
-                <p className="text-xs text-indigo-200">Starting at</p>
-                <p className="font-bold text-sm">₹34,999</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats bar ── */}
-      <section className="bg-indigo-600 text-white py-5">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          {[
-            { n: '500+', label: 'Happy Customers' },
-            { n: '20+', label: 'iPhone Models' },
-            { n: '100%', label: 'Genuine Products' },
-            { n: '24/7', label: 'Customer Support' },
-          ].map(({ n, label }) => (
-            <div key={label}>
-              <p className="text-2xl font-black">{n}</p>
-              <p className="text-indigo-200 text-sm">{label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Categories ── */}
-      <section className="py-16 bg-gray-50">
+      {/* ── All Featured Products Grid ── */}
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-black text-gray-900">Shop by Category</h2>
-            <p className="text-gray-500 mt-2">Find exactly what you need</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 stagger">
-            {CATEGORIES.map(cat => (
-              <Link
-                key={cat.key}
-                to={`/shop?category=${encodeURIComponent(cat.key)}`}
-                className="card p-5 text-center hover:-translate-y-1 animate-fade-in-up group"
-              >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
-                  {cat.emoji}
-                </div>
-                <h3 className="font-bold text-gray-900 text-sm mb-1">{cat.name}</h3>
-                <p className="text-xs text-gray-500">{cat.desc}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured Products ── */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-12">
             <div>
-              <h2 className="text-3xl font-black text-gray-900">Featured Products</h2>
-              <p className="text-gray-500 mt-1">Handpicked for you</p>
+              <span className="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                TOP PICKS TODAY
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-950 mt-2">
+                Featured Products & Accessories
+              </h2>
+              <p className="text-gray-500 text-sm mt-1">
+                Everything in stock and ready for immediate dispatch across Chennai and India.
+              </p>
             </div>
-            <Link to="/shop" className="flex items-center gap-1 text-indigo-600 font-semibold hover:gap-2 transition-all duration-200 text-sm">
-              View all <ChevronRight size={16} />
+            <Link
+              to="/shop"
+              className="text-indigo-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1.5"
+            >
+              <span>Explore All ({products.length})</span>
+              <ChevronRight size={16} />
             </Link>
           </div>
+
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden">
-                  <div className="skeleton aspect-square" />
-                  <div className="p-4 space-y-2">
-                    <div className="skeleton h-4 w-3/4" />
-                    <div className="skeleton h-4 w-1/2" />
-                    <div className="skeleton h-10 w-full mt-2" />
-                  </div>
-                </div>
+                <div key={i} className="rounded-3xl bg-gray-100 aspect-square animate-pulse" />
               ))}
             </div>
           ) : (
@@ -173,60 +339,19 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ── Promo Banner ── */}
-      <section className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-white">
-          <Truck className="w-10 h-10 mx-auto mb-3 opacity-80" />
-          <h2 className="text-2xl md:text-3xl font-black mb-2">Free Delivery on Orders Above ₹5,000</h2>
-          <p className="text-indigo-200 mb-6">Shipped securely across all of India. Same-day dispatch in Chennai.</p>
-          <Link to="/shop" className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold px-8 py-3 rounded-full transition-all duration-200 shadow-lg">
-            Shop Now
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Latest iPhones ── */}
-      {latestIphones.length > 0 && (
-        <section className="py-16 bg-gray-950 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-10">
-              <div>
-                <h2 className="text-3xl font-black">Latest iPhones</h2>
-                <p className="text-gray-400 mt-1">The newest Apple lineup</p>
-              </div>
-              <Link to="/shop?category=iPhone" className="flex items-center gap-1 text-indigo-400 font-semibold hover:gap-2 transition-all duration-200 text-sm">
-                All iPhones <ChevronRight size={16} />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {latestIphones.map((product, i) => (
-                <Link key={product.id} to={`/product/${product.id}`}
-                  className="bg-gray-900 hover:bg-gray-800 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 group animate-fade-in-up"
-                  style={{ animationDelay: `${i * 0.1}s` }}
-                >
-                  <img src={product.image} alt={product.name} className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="p-4">
-                    <h3 className="font-bold text-white text-sm mb-1">{product.name}</h3>
-                    <p className="text-indigo-400 font-black">₹{product.price.toLocaleString('en-IN')}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Bestsellers ── */}
+      {/* ── Bestsellers Section ── */}
       {bestsellers.length > 0 && (
-        <section className="py-16 bg-white">
+        <section className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-3xl font-black text-gray-900">🔥 Bestsellers</h2>
-                <p className="text-gray-500 mt-1">Most loved by our customers</p>
+                <span className="text-xs font-black uppercase tracking-widest text-red-600 bg-red-50 px-3 py-1 rounded-full">
+                  MOST POPULAR
+                </span>
+                <h2 className="text-3xl font-black text-gray-900 mt-2">🔥 Customer Bestsellers</h2>
               </div>
-              <Link to="/shop" className="flex items-center gap-1 text-indigo-600 font-semibold hover:gap-2 transition-all duration-200 text-sm">
-                View all <ChevronRight size={16} />
+              <Link to="/shop" className="text-indigo-600 font-bold text-sm flex items-center gap-1">
+                See all <ChevronRight size={15} />
               </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -238,29 +363,24 @@ const HomePage = () => {
         </section>
       )}
 
-      {/* ── Why NMNORA ── */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-gray-900">Why Choose NMNORA?</h2>
-            <p className="text-gray-500 mt-2">We're committed to quality and your satisfaction</p>
+      {/* ── Promotional Express Banner ── */}
+      <section className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-700 text-white py-14 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
+          <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
+            <Truck size={32} className="text-white" />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger">
-            {[
-              { icon: Award, title: '100% Authentic', desc: 'All products are genuine Apple and certified accessories', color: 'text-indigo-600 bg-indigo-50' },
-              { icon: Shield, title: '1 Year Warranty', desc: 'Full manufacturer warranty on every iPhone we sell', color: 'text-emerald-600 bg-emerald-50' },
-              { icon: Truck, title: 'Fast Delivery', desc: 'Same-day delivery in Chennai, 2–5 days across India', color: 'text-blue-600 bg-blue-50' },
-              { icon: RefreshCw, title: '7-Day Returns', desc: 'Not happy? Return within 7 days for a full refund', color: 'text-purple-600 bg-purple-50' },
-            ].map(({ icon: Icon, title, desc, color }) => (
-              <div key={title} className="card p-6 text-center animate-fade-in-up hover:-translate-y-1">
-                <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center mx-auto mb-4`}>
-                  <Icon size={24} />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-3xl sm:text-4xl font-black mb-3">
+            Free Express Delivery in Chennai
+          </h2>
+          <p className="text-indigo-100 max-w-xl mx-auto mb-8 text-sm sm:text-base">
+            Orders placed before 2:00 PM are dispatched same-day with secure insurance and delivery tracking right to your doorstep.
+          </p>
+          <Link
+            to="/shop"
+            className="inline-block bg-white text-indigo-700 font-bold px-8 py-4 rounded-2xl shadow-xl hover:bg-slate-100 transition-all duration-200 active:scale-95"
+          >
+            Start Shopping Now
+          </Link>
         </div>
       </section>
 

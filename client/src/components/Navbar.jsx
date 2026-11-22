@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X, Smartphone } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { getProducts } from '../services/api';
+import ProductImage from './ProductImage';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -124,7 +125,13 @@ const Navbar = () => {
                     onClick={() => handleSuggestionClick(product)}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 transition-colors text-left"
                   >
-                    <img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded-lg" />
+                    <ProductImage
+                      src={product.image}
+                      alt={product.name}
+                      name={product.name}
+                      category={product.category}
+                      className="w-10 h-10 rounded-lg flex-shrink-0"
+                    />
                     <div>
                       <p className="text-sm font-medium text-gray-900">{product.name}</p>
                       <p className="text-xs text-indigo-600 font-semibold">{formatPrice(product.price)}</p>

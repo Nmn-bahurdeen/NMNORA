@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Package, Truck, ArrowRight, Copy, Check } from 'lucide-react';
 import { getOrder } from '../services/api';
 import { formatPrice } from '../utils/formatPrice';
+import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 
 const OrderSuccessPage = () => {
@@ -63,7 +64,13 @@ const OrderSuccessPage = () => {
               <div className="space-y-3">
                 {order.items?.map(item => (
                   <div key={item.id} className="flex items-center gap-3">
-                    <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-xl" />
+                    <ProductImage
+                      src={item.image}
+                      alt={item.name}
+                      name={item.name}
+                      category={item.category}
+                      className="w-12 h-12 rounded-xl flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
                       <p className="text-xs text-gray-500">Qty: {item.quantity}</p>

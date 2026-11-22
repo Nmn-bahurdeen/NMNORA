@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { formatPrice, discountPercent } from '../utils/formatPrice';
 import { getProduct, getProducts } from '../services/api';
 import ProductCard from '../components/ProductCard';
+import ProductImage from '../components/ProductImage';
 import Footer from '../components/Footer';
 
 const ProductDetailPage = () => {
@@ -96,8 +97,15 @@ const ProductDetailPage = () => {
         <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
           {/* Image */}
           <div className="animate-slide-left">
-            <div className="relative bg-gray-50 rounded-3xl overflow-hidden aspect-square">
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+            <div className="relative bg-gray-50 rounded-3xl overflow-hidden aspect-square shadow-xl">
+              <ProductImage
+                src={product.image}
+                alt={product.name}
+                name={product.name}
+                category={product.category}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                priority={true}
+              />
               {discount > 0 && (
                 <span className="absolute top-4 left-4 badge bg-red-500 text-white text-sm px-3 py-1.5">{discount}% OFF</span>
               )}
