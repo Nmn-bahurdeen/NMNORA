@@ -34,9 +34,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-// Start listening only in standalone server mode (not serverless on Vercel)
-if (!process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`NMNORA server running on port ${PORT}`));
-}
+app.listen(PORT, () => console.log(`NMNORA server running on port ${PORT}`));
 
 module.exports = app;
