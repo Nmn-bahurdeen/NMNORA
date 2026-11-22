@@ -2,6 +2,7 @@
   "name": "nmnora",
   "version": "1.0.0",
   "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build",
     "dev": "concurrently --names \"SERVER,CLIENT\" --prefix-colors \"blue,green\" \"npm run server\" \"npm run client\"",
     "tunnel": "node tunnel.js",
     "dev:public": "concurrently --names \"SERVER,CLIENT,TUNNEL\" --prefix-colors \"blue,green,magenta\" \"npm run server\" \"npm run client\" \"npm run tunnel\"",
@@ -13,5 +14,10 @@
     "concurrently": "^8.2.0",
     "localtunnel": "^2.0.2",
     "untun": "^0.2.2"
+  },
+  "dependencies": {
+    "@seald-io/nedb": "^4.1.2",
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
   }
 }
