@@ -472,12 +472,12 @@ const CartPage = () => {
             <h3 className="text-xl font-extrabold text-slate-900 mb-4">Delivery Information</h3>
             <div className="space-y-4 text-sm">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Name</label>
                 <input
                   type="text"
                   value={shippingName}
                   onChange={(e) => setShippingName(e.target.value)}
-                  placeholder="Mohamed"
+                  placeholder="Name"
                   className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs font-medium"
                 />
               </div>
