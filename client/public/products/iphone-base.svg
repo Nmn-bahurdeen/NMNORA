@@ -1,57 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <radialGradient id="baseBg" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#020617" stop-opacity="1"/>
-    </radialGradient>
     <linearGradient id="baseBody" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="50%" stop-color="#1d4ed8"/>
-      <stop offset="100%" stop-color="#1e3a8a"/>
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
     </linearGradient>
-    <linearGradient id="baseEdge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#1e40af"/>
+
+    <linearGradient id="baseRim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
     </linearGradient>
+
     <radialGradient id="baseLens" cx="35%" cy="35%" r="65%">
-      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
-      <stop offset="35%" stop-color="#0369a1" stop-opacity="0.7"/>
-      <stop offset="80%" stop-color="#090d16" stop-opacity="0.95"/>
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"/>
+      <stop offset="35%" stop-color="#0284c7" stop-opacity="0.75"/>
+      <stop offset="70%" stop-color="#0f172a" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#020617"/>
     </radialGradient>
-    <filter id="baseShadow" x="-15%" y="-15%" width="130%" height="130%">
-      <feDropShadow dx="0" dy="25" stdDeviation="28" flood-color="#000000" flood-opacity="0.7"/>
-      <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="#3b82f6" flood-opacity="0.3"/>
+
+    <filter id="baseShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#0284c7" flood-opacity="0.18"/>
     </filter>
   </defs>
 
-  <rect width="600" height="600" fill="url(#baseBg)"/>
+  <!-- Ambient Light Backdrop Glow -->
+  <circle cx="250" cy="250" r="210" fill="#f0f9ff" opacity="0.7"/>
 
   <!-- Phone Body -->
   <g filter="url(#baseShadow)">
-    <rect x="175" y="70" width="250" height="460" rx="48" fill="url(#baseEdge)" stroke="#93c5fd" stroke-width="2"/>
-    <rect x="179" y="74" width="242" height="452" rx="44" fill="url(#baseBody)"/>
+    <rect x="145" y="55" width="210" height="390" rx="42" fill="url(#baseRim)" stroke="#ffffff" stroke-width="1.5"/>
+    <rect x="149" y="59" width="202" height="382" rx="38" fill="url(#baseBody)"/>
 
-    <path d="M 185,80 L 380,80 L 185,450 Z" fill="#ffffff" opacity="0.08"/>
+    <!-- Light Sheen -->
+    <path d="M 155,65 L 330,65 L 155,370 Z" fill="#ffffff" opacity="0.25"/>
 
-    <!-- Dual Camera Island -->
-    <rect x="195" y="90" width="95" height="150" rx="38" fill="#1e3a8a" stroke="#60a5fa" stroke-width="1.5" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.5))"/>
+    <!-- Dual Camera Pill / Island -->
+    <rect x="160" y="70" width="85" height="130" rx="36" fill="#0284c7" stroke="#bae6fd" stroke-width="1.2" filter="drop-shadow(0 4px 8px rgba(0,0,0,0.15))"/>
 
     <!-- Lens 1 (Top) -->
-    <circle cx="242.5" cy="130" r="24" fill="#0f172a" stroke="#93c5fd" stroke-width="2"/>
-    <circle cx="242.5" cy="130" r="19" fill="url(#baseLens)"/>
-    <circle cx="238" cy="125" r="5" fill="#ffffff" opacity="0.6"/>
+    <circle cx="202.5" cy="105" r="20" fill="#0369a1" stroke="#ffffff" stroke-width="1.2"/>
+    <circle cx="202.5" cy="105" r="16" fill="#0f172a"/>
+    <circle cx="202.5" cy="105" r="13" fill="url(#baseLens)"/>
+    <circle cx="198.5" cy="101" r="3.5" fill="#ffffff" opacity="0.8"/>
 
     <!-- Lens 2 (Bottom) -->
-    <circle cx="242.5" cy="200" r="24" fill="#0f172a" stroke="#93c5fd" stroke-width="2"/>
-    <circle cx="242.5" cy="200" r="19" fill="url(#baseLens)"/>
-    <circle cx="238" cy="195" r="5" fill="#ffffff" opacity="0.6"/>
+    <circle cx="202.5" cy="165" r="20" fill="#0369a1" stroke="#ffffff" stroke-width="1.2"/>
+    <circle cx="202.5" cy="165" r="16" fill="#0f172a"/>
+    <circle cx="202.5" cy="165" r="13" fill="url(#baseLens)"/>
+    <circle cx="198.5" cy="161" r="3.5" fill="#ffffff" opacity="0.8"/>
 
     <!-- Flash -->
-    <circle cx="242.5" cy="165" r="7" fill="#fef08a" stroke="#eab308" stroke-width="1"/>
-    <circle cx="242.5" cy="165" r="3" fill="#ffffff"/>
+    <circle cx="202.5" cy="135" r="5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.8"/>
 
     <!-- Apple Logo -->
-    <path d="M 297,300 C 298,296 301,293 306,292 C 304,297 301,300 297,300 Z M 309,303 C 305,303 302,305 299,305 C 296,305 294,303 290,303 C 283,303 278,309 278,320 C 278,330 285,341 292,341 C 295,341 297,339 300,339 C 303,339 305,341 308,341 C 314,341 320,331 321,326 C 315,323 314,314 319,310 C 316,305 312,303 309,303 Z" fill="#ffffff" opacity="0.85"/>
+    <g transform="translate(250, 265) scale(0.9)">
+      <path d="M -3,-33 C -1,-37 2,-40 7,-41 C 5,-36 2,-33 -3,-33 Z M 9,-30 C 5,-30 2,-28 -1,-28 C -4,-28 -6,-30 -10,-30 C -17,-30 -22,-24 -22,-13 C -22,-3 -15,8 -8,8 C -5,8 -3,6 0,6 C 3,6 5,8 8,8 C 14,8 20,-2 21,-7 C 15,-10 14,-19 19,-23 C 16,-28 12,-30 9,-30 Z"
+        fill="#ffffff"
+        opacity="0.9"
+      />
+    </g>
+
+    <rect x="210" y="415" width="80" height="16" rx="8" fill="#ffffff" opacity="0.85"/>
+    <text x="250" y="426" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="700" fill="#0369a1" text-anchor="middle" letter-spacing="1">IPHONE</text>
   </g>
 </svg>

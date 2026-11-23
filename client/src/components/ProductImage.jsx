@@ -21,7 +21,6 @@ const ProductImage = ({ src, alt = '', name = '', category = '', className = '',
   useEffect(() => {
     setImgSrc(src || fallback);
     setHasError(false);
-    setLoaded(false);
   }, [src, fallback]);
 
   const handleError = () => {
@@ -32,10 +31,10 @@ const ProductImage = ({ src, alt = '', name = '', category = '', className = '',
   };
 
   return (
-    <div className={`relative overflow-hidden bg-slate-950 flex items-center justify-center ${className}`}>
-      {/* Subtle pulse placeholder while loading */}
-      {!loaded && (
-        <div className="absolute inset-0 bg-slate-900 animate-pulse" />
+    <div className={`relative overflow-hidden bg-gradient-to-b from-slate-50 via-slate-100/50 to-slate-100 flex items-center justify-center ${className}`}>
+      {/* Clean subtle shimmer while loading */}
+      {!loaded && !hasError && (
+        <div className="absolute inset-0 bg-slate-100 animate-pulse" />
       )}
       <img
         src={imgSrc || fallback}
@@ -43,9 +42,7 @@ const ProductImage = ({ src, alt = '', name = '', category = '', className = '',
         onError={handleError}
         onLoad={() => setLoaded(true)}
         loading={priority ? 'eager' : 'lazy'}
-        className={`w-full h-full object-contain p-2 transition-all duration-300 ${
-          loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-        }`}
+        className="w-full h-full object-contain p-3.5 transition-all duration-300 drop-shadow-md group-hover:scale-105"
       />
     </div>
   );

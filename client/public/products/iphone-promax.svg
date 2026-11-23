@@ -1,80 +1,103 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <radialGradient id="maxGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#2d251e" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#0a0a0f" stop-opacity="1"/>
-    </radialGradient>
-    <linearGradient id="natTitanium" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#8d8478"/>
-      <stop offset="25%" stop-color="#5a5247"/>
-      <stop offset="70%" stop-color="#36322b"/>
-      <stop offset="100%" stop-color="#1f1c18"/>
+    <!-- Titanium Body Gradient -->
+    <linearGradient id="promaxBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="40%" stop-color="#cbd5e1"/>
+      <stop offset="70%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
     </linearGradient>
-    <linearGradient id="goldEdge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#d4af37"/>
-      <stop offset="50%" stop-color="#8b7325"/>
-      <stop offset="100%" stop-color="#3b3111"/>
+
+    <!-- Natural Titanium Rim -->
+    <linearGradient id="promaxRim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="25%" stop-color="#cbd5e1"/>
+      <stop offset="75%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#475569"/>
     </linearGradient>
-    <radialGradient id="proMaxLens" cx="35%" cy="35%" r="65%">
+
+    <!-- Glass Matte Back Plate -->
+    <linearGradient id="promaxGlass" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <!-- Camera Plateau -->
+    <linearGradient id="plateauGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="60%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+
+    <!-- Camera Lens Reflections -->
+    <radialGradient id="promaxLens" cx="35%" cy="35%" r="65%">
       <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"/>
-      <stop offset="30%" stop-color="#0369a1" stop-opacity="0.8"/>
-      <stop offset="70%" stop-color="#0f172a" stop-opacity="0.98"/>
+      <stop offset="30%" stop-color="#0284c7" stop-opacity="0.8"/>
+      <stop offset="65%" stop-color="#0f172a" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#020617"/>
     </radialGradient>
-    <filter id="proMaxShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="25" stdDeviation="30" flood-color="#000000" flood-opacity="0.85"/>
-      <feDropShadow dx="0" dy="5" stdDeviation="15" flood-color="#eab308" flood-opacity="0.2"/>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="phoneShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0f172a" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#3b82f6" flood-opacity="0.12"/>
     </filter>
   </defs>
 
-  <rect width="600" height="600" fill="url(#maxGlow)"/>
+  <!-- Ambient Light Backdrop Glow (Transparent center) -->
+  <circle cx="250" cy="250" r="210" fill="#f1f5f9" opacity="0.6"/>
 
-  <!-- Phone Body -->
-  <g filter="url(#proMaxShadow)">
-    <!-- Outer Titanium Gold Frame -->
-    <rect x="160" y="55" width="280" height="490" rx="56" fill="url(#goldEdge)" stroke="#e2d4b7" stroke-width="2.5"/>
-    <!-- Back Matte Frosted Glass -->
-    <rect x="165" y="60" width="270" height="480" rx="52" fill="url(#natTitanium)"/>
+  <!-- Phone Body with Shadow -->
+  <g filter="url(#phoneShadow)">
+    <!-- Outer Titanium Chiseled Frame -->
+    <rect x="135" y="45" width="230" height="410" rx="46" fill="url(#promaxRim)" stroke="#ffffff" stroke-width="2"/>
 
-    <!-- High-end frosted light reflection -->
-    <path d="M 170,65 L 400,65 L 170,500 Z" fill="#ffffff" opacity="0.06"/>
+    <!-- Matte Textured Back Glass -->
+    <rect x="139" y="49" width="222" height="402" rx="42" fill="url(#promaxGlass)"/>
 
-    <!-- Massive Triple Camera Housing -->
-    <rect x="180" y="75" width="142" height="148" rx="42" fill="#2d2822" stroke="#685d4f" stroke-width="1.8" filter="drop-shadow(0 6px 14px rgba(0,0,0,0.6))"/>
-    <rect x="182" y="77" width="138" height="144" rx="40" fill="#3b352c" opacity="0.85"/>
+    <!-- Light Reflection Sheen Angle -->
+    <path d="M 145,55 L 340,55 L 145,390 Z" fill="#ffffff" opacity="0.4"/>
 
-    <!-- Top Left Main 48MP Pro Lens -->
-    <circle cx="225" cy="118" r="26" fill="#18181b" stroke="#a1a1aa" stroke-width="2.2"/>
-    <circle cx="225" cy="118" r="21" fill="url(#proMaxLens)"/>
-    <circle cx="220" cy="113" r="6" fill="#ffffff" opacity="0.7"/>
+    <!-- Camera Island Plateau (Rounded Square) -->
+    <rect x="152" y="62" width="115" height="118" rx="32" fill="url(#plateauGrad)" stroke="#ffffff" stroke-width="1.5" filter="drop-shadow(0 4px 10px rgba(0,0,0,0.15))"/>
 
-    <!-- Bottom Left 5x Tetraprism Telephoto Lens -->
-    <circle cx="225" cy="180" r="26" fill="#18181b" stroke="#a1a1aa" stroke-width="2.2"/>
-    <circle cx="225" cy="180" r="21" fill="url(#proMaxLens)"/>
-    <circle cx="220" cy="175" r="6" fill="#ffffff" opacity="0.7"/>
+    <!-- Lens 1: Top Left (Main 48MP) -->
+    <circle cx="187" cy="98" r="23" fill="#cbd5e1" stroke="#ffffff" stroke-width="1.5"/>
+    <circle cx="187" cy="98" r="19" fill="#0f172a"/>
+    <circle cx="187" cy="98" r="15" fill="url(#promaxLens)"/>
+    <circle cx="183" cy="94" r="4.5" fill="#ffffff" opacity="0.75"/>
 
-    <!-- Right Center Ultra Wide Lens -->
-    <circle cx="278" cy="149" r="26" fill="#18181b" stroke="#a1a1aa" stroke-width="2.2"/>
-    <circle cx="278" cy="149" r="21" fill="url(#proMaxLens)"/>
-    <circle cx="273" cy="144" r="6" fill="#ffffff" opacity="0.7"/>
+    <!-- Lens 2: Bottom Left (Ultra Wide) -->
+    <circle cx="187" cy="144" r="23" fill="#cbd5e1" stroke="#ffffff" stroke-width="1.5"/>
+    <circle cx="187" cy="144" r="19" fill="#0f172a"/>
+    <circle cx="187" cy="144" r="15" fill="url(#promaxLens)"/>
+    <circle cx="183" cy="140" r="4.5" fill="#ffffff" opacity="0.75"/>
 
-    <!-- LiDAR 3D Depth Scanner -->
-    <circle cx="286" cy="192" r="9" fill="#090d16" stroke="#52525b" stroke-width="1.5"/>
+    <!-- Lens 3: Right Center (Periscope Telephoto) -->
+    <circle cx="233" cy="121" r="23" fill="#cbd5e1" stroke="#ffffff" stroke-width="1.5"/>
+    <circle cx="233" cy="121" r="19" fill="#0f172a"/>
+    <circle cx="233" cy="121" r="15" fill="url(#promaxLens)"/>
+    <circle cx="229" cy="117" r="4.5" fill="#ffffff" opacity="0.75"/>
 
-    <!-- TrueTone Multi-LED Flash -->
-    <circle cx="284" cy="106" r="10" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/>
-    <circle cx="284" cy="106" r="5" fill="#ffffff"/>
+    <!-- TrueTone Flash (Top Right) -->
+    <circle cx="233" cy="84" r="8" fill="#fef08a" stroke="#ca8a04" stroke-width="1"/>
+    <circle cx="233" cy="84" r="4" fill="#ffffff"/>
 
-    <!-- Microphone -->
-    <circle cx="304" cy="149" r="2.5" fill="#18181b"/>
+    <!-- LiDAR Sensor (Bottom Right) -->
+    <circle cx="233" cy="158" r="6" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
 
-    <!-- Apple Logo in Liquid Mirror Finish -->
-    <path d="M 297,310 C 298,306 301,303 306,302 C 304,307 301,310 297,310 Z M 309,313 C 305,313 302,315 299,315 C 296,315 294,313 290,313 C 283,313 278,319 278,330 C 278,340 285,351 292,351 C 295,351 297,349 300,349 C 303,349 305,351 308,351 C 314,351 320,341 321,336 C 315,333 314,324 319,320 C 316,315 312,313 309,313 Z" fill="#d4af37" opacity="0.95"/>
-  </g>
+    <!-- Shimmering Apple Logo -->
+    <g transform="translate(250, 260) scale(0.95)">
+      <path d="M -3,-33 C -1,-37 2,-40 7,-41 C 5,-36 2,-33 -3,-33 Z M 9,-30 C 5,-30 2,-28 -1,-28 C -4,-28 -6,-30 -10,-30 C -17,-30 -22,-24 -22,-13 C -22,-3 -15,8 -8,8 C -5,8 -3,6 0,6 C 3,6 5,8 8,8 C 14,8 20,-2 21,-7 C 15,-10 14,-19 19,-23 C 16,-28 12,-30 9,-30 Z"
+        fill="#475569"
+        opacity="0.75"
+        filter="drop-shadow(0 1px 2px rgba(255,255,255,0.8))"
+      />
+    </g>
 
-  <!-- Pro Max Badge Overlay -->
-  <g transform="translate(410, 485)">
-    <rect width="160" height="42" rx="21" fill="#eab308" opacity="0.95"/>
-    <text x="80" y="26" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="900" fill="#422006" text-anchor="middle">PRO MAX 6.9"</text>
+    <!-- Titanium Model Label Badge at Bottom -->
+    <rect x="200" y="420" width="100" height="18" rx="9" fill="#ffffff" opacity="0.9" stroke="#e2e8f0"/>
+    <text x="250" y="432" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8.5" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1">TITANIUM PRO MAX</text>
   </g>
 </svg>

@@ -1,69 +1,69 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <radialGradient id="airBg" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="#020617" stop-opacity="1"/>
-    </radialGradient>
-    <linearGradient id="podWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="podBody" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="50%" stop-color="#f8fafc"/>
+      <stop offset="65%" stop-color="#f8fafc"/>
       <stop offset="100%" stop-color="#e2e8f0"/>
     </linearGradient>
-    <filter id="podShadow" x="-25%" y="-25%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="25" stdDeviation="30" flood-color="#000000" flood-opacity="0.8"/>
-      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#38bdf8" flood-opacity="0.25"/>
+
+    <linearGradient id="podRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <filter id="podShadow" x="-20%" y="-10%" width="140%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#38bdf8" flood-opacity="0.15"/>
     </filter>
   </defs>
 
-  <rect width="600" height="600" fill="url(#airBg)"/>
+  <circle cx="250" cy="250" r="210" fill="#f8fafc" opacity="0.8"/>
 
-  <!-- Charging Case and Floating Pods -->
   <g filter="url(#podShadow)">
-    <!-- Wireless Charging Case -->
-    <g transform="translate(190, 260)">
-      <rect x="0" y="0" width="220" height="170" rx="60" fill="url(#podWhite)" stroke="#cbd5e1" stroke-width="1.5"/>
-      <!-- Lid Seam Line -->
-      <line x1="0" y1="52" x2="220" y2="52" stroke="#cbd5e1" stroke-width="2"/>
-      <!-- Status LED -->
-      <circle cx="110" cy="88" r="4" fill="#22c55e" filter="drop-shadow(0 0 6px #22c55e)"/>
-      <!-- Lid Lip Cutout -->
-      <path d="M 98,52 C 98,56 122,56 122,52 Z" fill="#94a3b8"/>
+    <!-- MagSafe Charging Case (Wide pill shape) -->
+    <rect x="135" y="180" width="230" height="180" rx="60" fill="url(#podBody)" stroke="#cbd5e1" stroke-width="1.5"/>
+
+    <!-- Case Lid Seam Line -->
+    <path d="M 136,235 C 190,237 310,237 364,235" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
+
+    <!-- Status LED (Green) -->
+    <circle cx="250" cy="275" r="3.5" fill="#22c55e" filter="drop-shadow(0 0 4px #22c55e)"/>
+
+    <!-- Left Earbud (Floating above case) -->
+    <g transform="translate(180, 110)">
+      <!-- Head -->
+      <ellipse cx="0" cy="0" rx="22" ry="18" fill="url(#podBody)" stroke="#e2e8f0" stroke-width="1"/>
+      <!-- Black Acoustic Vent Mesh -->
+      <ellipse cx="-4" cy="-3" rx="7" ry="5" fill="#0f172a"/>
+      <!-- Silicone Tip (Soft grey/white) -->
+      <ellipse cx="12" cy="0" rx="14" ry="12" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+      <!-- Stem with touch sensor indent -->
+      <rect x="-14" y="8" width="9" height="42" rx="4.5" fill="url(#podBody)" stroke="#cbd5e1" stroke-width="1"/>
+      <rect x="-12" y="20" width="5" height="14" rx="2.5" fill="#e2e8f0"/>
+      <!-- Chrome Base Ring & Mic -->
+      <rect x="-14" y="47" width="9" height="3" rx="1" fill="#94a3b8"/>
     </g>
 
-    <!-- Left AirPod Floating in 3D -->
-    <g transform="translate(180, 150) rotate(-22)">
-      <!-- Short Stem -->
-      <rect x="-8" y="0" width="16" height="62" rx="8" fill="url(#podWhite)" stroke="#cbd5e1" stroke-width="1"/>
-      <rect x="-6" y="52" width="12" height="6" rx="2" fill="#cbd5e1"/>
-      <!-- In-Ear Head -->
-      <ellipse cx="16" cy="-14" rx="26" ry="24" fill="url(#podWhite)" stroke="#cbd5e1" stroke-width="1"/>
-      <ellipse cx="32" cy="-14" rx="12" ry="16" fill="#cbd5e1"/>
-      <!-- Black Acoustic Vent -->
-      <rect x="-4" y="-12" width="6" height="16" rx="3" fill="#1e293b"/>
+    <!-- Right Earbud (Floating above case) -->
+    <g transform="translate(320, 110)">
+      <ellipse cx="0" cy="0" rx="22" ry="18" fill="url(#podBody)" stroke="#e2e8f0" stroke-width="1"/>
+      <ellipse cx="4" cy="-3" rx="7" ry="5" fill="#0f172a"/>
+      <ellipse cx="-12" cy="0" rx="14" ry="12" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+      <rect x="5" y="8" width="9" height="42" rx="4.5" fill="url(#podBody)" stroke="#cbd5e1" stroke-width="1"/>
+      <rect x="7" y="20" width="5" height="14" rx="2.5" fill="#e2e8f0"/>
+      <rect x="5" y="47" width="9" height="3" rx="1" fill="#94a3b8"/>
     </g>
 
-    <!-- Right AirPod Floating in 3D -->
-    <g transform="translate(420, 150) rotate(22)">
-      <!-- Short Stem -->
-      <rect x="-8" y="0" width="16" height="62" rx="8" fill="url(#podWhite)" stroke="#cbd5e1" stroke-width="1"/>
-      <rect x="-6" y="52" width="12" height="6" rx="2" fill="#cbd5e1"/>
-      <!-- In-Ear Head -->
-      <ellipse cx="-16" cy="-14" rx="26" ry="24" fill="url(#podWhite)" stroke="#cbd5e1" stroke-width="1"/>
-      <ellipse cx="-32" cy="-14" rx="12" ry="16" fill="#cbd5e1"/>
-      <!-- Black Acoustic Vent -->
-      <rect x="-2" y="-12" width="6" height="16" rx="3" fill="#1e293b"/>
-    </g>
-  </g>
+    <!-- Lightning / USB-C Port at Case Bottom -->
+    <rect x="235" y="356" width="30" height="5" rx="2.5" fill="#64748b"/>
+    <!-- Speaker holes at case bottom -->
+    <circle cx="218" cy="358" r="1.5" fill="#94a3b8"/>
+    <circle cx="223" cy="358" r="1.5" fill="#94a3b8"/>
+    <circle cx="277" cy="358" r="1.5" fill="#94a3b8"/>
+    <circle cx="282" cy="358" r="1.5" fill="#94a3b8"/>
 
-  <!-- Sound Waves Graphic -->
-  <path d="M 100,120 A 40,40 0 0,0 100,180" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <path d="M 80,105 A 60,60 0 0,0 80,195" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
-  <path d="M 500,120 A 40,40 0 0,1 500,180" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <path d="M 520,105 A 60,60 0 0,1 520,195" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
-
-  <!-- Badge -->
-  <g transform="translate(230, 480)">
-    <rect width="140" height="36" rx="18" fill="#0284c7" opacity="0.9"/>
-    <text x="70" y="23" font-family="Inter, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">SPATIAL AUDIO</text>
+    <!-- Badge -->
+    <rect x="195" y="415" width="110" height="18" rx="9" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+    <text x="250" y="427" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="8" font-weight="700" fill="#475569" text-anchor="middle" letter-spacing="1">AIRPODS PRO TWS</text>
   </g>
 </svg>
