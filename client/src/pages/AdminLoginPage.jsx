@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Lock, ArrowLeft, CheckCircle2, AlertTriangle, KeyRound } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowLeft, AlertTriangle, KeyRound, ArrowRight } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('admin@nmnora.com');
   const [password, setPassword] = useState('AdminPassword@123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { user, login, logout, isAdmin } = useAuth();
+  const { user, login, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   // If already authenticated as ADMIN, redirect straight to dashboard
@@ -18,13 +18,12 @@ export default function AdminLoginPage() {
     }
   }, [isAdmin, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const performLogin = async (loginEmail, loginPass) => {
     setError('');
     setLoading(true);
 
     try {
-      const loggedUser = await login(email.trim(), password);
+      const loggedUser = await login(loginEmail.trim(), String(loginPass).trim());
       if (loggedUser.role !== 'ADMIN') {
         setError(`Access denied. Account "${loggedUser.email}" has CUSTOMER permissions. An ADMIN role is required.`);
         return;
@@ -35,7 +34,7 @@ export default function AdminLoginPage() {
       if (err.response?.data?.error) {
         setError(err.response.data.error);
       } else if (err.code === 'ERR_NETWORK' || !err.response) {
-        setError('Cannot connect to backend server. Please verify port 5000 is running.');
+        setError('Cannot connect to backend server. Please verify port 5000 is online.');
       } else {
         setError('Invalid administrator credentials. Access denied.');
       }
@@ -44,10 +43,15 @@ export default function AdminLoginPage() {
     }
   };
 
-  const fillCredentials = (fillEmail, fillPass) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    performLogin(email, password);
+  };
+
+  const handleQuickLogin = (fillEmail, fillPass) => {
     setEmail(fillEmail);
     setPassword(fillPass);
-    setError('');
+    performLogin(fillEmail, fillPass);
   };
 
   return (
@@ -116,35 +120,41 @@ export default function AdminLoginPage() {
             />
           </div>
 
-          {/* Quick 1-Click Credentials Helper */}
+          {/* Quick 1-Click Instant Login Buttons */}
           <div className="p-3.5 rounded-xl bg-slate-800/50 border border-slate-700/60 text-xs space-y-2">
             <div className="flex items-center justify-between text-slate-300 font-semibold text-[11px] uppercase tracking-wider">
-              <span className="flex items-center gap-1.5"><KeyRound size={13} className="text-amber-400" /> Authorized Admin Accounts:</span>
+              <span className="flex items-center gap-1.5"><KeyRound size={13} className="text-amber-400" /> Instant Admin Sign-In:</span>
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <button
                 type="button"
-                onClick={() => fillCredentials('admin@nmnora.com', 'AdminPassword@123')}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition-colors group"
+                disabled={loading}
+                onClick={() => handleQuickLogin('admin@nmnora.com', 'AdminPassword@123')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-left transition-colors group cursor-pointer disabled:opacity-50"
               >
                 <div className="truncate">
-                  <span className="text-amber-400 font-mono text-[11px]">admin@nmnora.com</span>
+                  <span className="text-amber-400 font-mono text-xs font-bold">admin@nmnora.com</span>
                   <span className="text-slate-400 text-[10px] ml-2">Default Store Admin</span>
                 </div>
-                <span className="text-[10px] text-amber-400/80 group-hover:text-amber-300 font-bold uppercase">1-Click Fill</span>
+                <span className="text-[11px] text-amber-400 font-bold uppercase flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  Instant Login <ArrowRight size={12} />
+                </span>
               </button>
 
               <button
                 type="button"
-                onClick={() => fillCredentials('230071601103@gmail.com', 'AdminPassword@123')}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition-colors group"
+                disabled={loading}
+                onClick={() => handleQuickLogin('230071601103@gmail.com', 'AdminPassword@123')}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-left transition-colors group cursor-pointer disabled:opacity-50"
               >
                 <div className="truncate">
-                  <span className="text-sky-400 font-mono text-[11px]">230071601103@gmail.com</span>
+                  <span className="text-sky-400 font-mono text-xs font-bold">230071601103@gmail.com</span>
                   <span className="text-slate-400 text-[10px] ml-2">Owner (bahur)</span>
                 </div>
-                <span className="text-[10px] text-sky-400/80 group-hover:text-sky-300 font-bold uppercase">1-Click Fill</span>
+                <span className="text-[11px] text-sky-400 font-bold uppercase flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  Instant Login <ArrowRight size={12} />
+                </span>
               </button>
             </div>
           </div>
@@ -152,7 +162,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+            className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
               <span>Authenticating...</span>
