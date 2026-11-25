@@ -137,14 +137,14 @@ export default function AdminLoginPage() {
 
               <button
                 type="button"
-                onClick={() => fillCredentials('230071601103@gmail.com', '')}
+                onClick={() => fillCredentials('230071601103@gmail.com', 'AdminPassword@123')}
                 className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left transition-colors group"
               >
                 <div className="truncate">
                   <span className="text-sky-400 font-mono text-[11px]">230071601103@gmail.com</span>
                   <span className="text-slate-400 text-[10px] ml-2">Owner (bahur)</span>
                 </div>
-                <span className="text-[10px] text-sky-400/80 group-hover:text-sky-300 font-bold uppercase">Fill Email</span>
+                <span className="text-[10px] text-sky-400/80 group-hover:text-sky-300 font-bold uppercase">1-Click Fill</span>
               </button>
             </div>
           </div>

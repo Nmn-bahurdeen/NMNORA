@@ -455,6 +455,29 @@ async function seedDatabase() {
       console.log('[Seed] Admin account created: admin@nmnora.com / AdminPassword@123');
     }
 
+    // Ensure owner account is also ADMIN
+    const ownerEmail = '230071601103@gmail.com';
+    const existingOwner = await prisma.user.findUnique({ where: { email: ownerEmail } });
+    if (!existingOwner) {
+      await prisma.user.create({
+        data: {
+          name: 'bahur',
+          email: ownerEmail,
+          password: adminPasswordHash,
+          role: 'ADMIN',
+          phone: '9943881393',
+          address: '123 Commerce Street',
+          city: 'Chennai',
+          pincode: '600048'
+        }
+      });
+    } else if (existingOwner.role !== 'ADMIN') {
+      await prisma.user.update({
+        where: { email: ownerEmail },
+        data: { role: 'ADMIN' }
+      });
+    }
+
     // 2. Seed or update Demo Customer user
     const customerEmail = 'customer@nmnora.com';
     const existingCustomer = await prisma.user.findUnique({ where: { email: customerEmail } });
